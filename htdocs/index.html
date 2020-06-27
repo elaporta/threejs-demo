@@ -13,6 +13,9 @@
 
     <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/loader.css" />
+
+    <!-- Color picker -->
+    <script src="js/html5kellycolorpicker/html5kellycolorpicker.min.js"></script>
 </head>
 
 <body>
@@ -44,8 +47,41 @@
         </div>
     </div>
 
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="btns">
+            <a class="btn" id="openbtn">&#9776;</a>
+        </div>
+
+        <div class="content">
+            <div class="header">
+                <h3>Busca tu color</h3>
+                <hr/>
+            </div>
+
+            <!-- Color picker -->
+            <div class="color-picker">
+                <canvas id="picker"></canvas>
+
+                <input id="color" value="#54aedb">
+                
+                <script>
+                    new KellyColorPicker({place : 'picker', input : 'color', size : 150});
+                </script>
+            </div>
+
+            <div class="header">
+                <h3>Selecciona color</h3>
+                <hr/>
+            </div>
+        </div>
+    </div>
+
     <!-- The canvas element is used to draw the 3D scene -->
     <canvas id="c"></canvas>
+
+    <!-- WebGL compatibility message -->
+    <div id="webgl"></div>
 
     <div class="controls">
         <div class="info">

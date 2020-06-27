@@ -284,3 +284,74 @@ html {
     width: 50px;
     cursor: default;
 }
+
+#webgl {
+    height: auto; /* 100% Full-height */
+    width: auto; /* 0 width - change this with JavaScript */
+    position: absolute; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    left: auto;
+    right: auto;
+    background-color: white;
+    opacity: 0.95;
+}
+
+.sidebar {
+    height: 100%; /* 100% Full-height */
+    width: 0px; /* 0 width - change this with JavaScript */
+    min-width: 50px;
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0;
+    right: 0;
+    background-color: #111; /* Black*/
+    opacity: 0.95;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    padding-left: 50px;
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidebar */
+}
+
+.sidebar .btns {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    padding-top: 20px;
+}
+
+.sidebar .content {
+    width: 150px;
+    text-align: center;
+    color: white;
+    font-family: 'Raleway', sans-serif;
+}
+
+.content .header{
+    margin-bottom: 10px;
+}
+
+.color-picker {
+    margin-bottom: 50px;
+}
+
+.color-picker input {
+    border: 0px;
+    height: 32px;
+    width: 150px;
+    margin-top: 10px;
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    font-weight: bold;
+}
+
+#openbtn {
+    cursor: pointer;
+    font-size: 20px;
+    padding-top: 10px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidebar { padding-top: 15px; }
+    .sidebar a { font-size: 18px; }
+}

@@ -1,10 +1,14 @@
 // Dependencies
 import * as THREE from './three.js/build/three.module.js';
-import { TDSLoader } from './three.js/examples/jsm/loaders/TDSLoader.js';
+import { WEBGL } from './three.js/examples/jsm/loaders/WEBGL.js';
+import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
+import { COLORS } from './colors.js';
 
-// Mocks
-import { COLORS } from '../mocks/colors.js';
+// import { TDSLoader } from './three.js/examples/jsm/loaders/TDSLoader.js';
+// import { MTLLoader } from './three.js/examples/jsm/loaders/MTLLoader.js';
+// import { OBJLoader } from './three.js/examples/jsm/loaders/OBJLoader.js';
+// import { TGALoader } from './three.js/examples/jsm/loaders/TGALoader.js';
 
 const LOADER = document.getElementById('js-loader');
 const TRAY = document.getElementById('js-tray-slide');
@@ -12,11 +16,9 @@ const DRAG_NOTICE = document.getElementById('js-drag-notice');
 
 let theModel;
 let activeOption = 'all';
-
 const colors = COLORS;
-const BACKGROUND_COLOR = 0xf1f1f1;
 
-// Initial material
+const BACKGROUND_COLOR = 0xf1f1f1;
 const INITIAL_MTL = new THREE.MeshPhongMaterial({ color: 0xF2DABA, shininess: 10 });
 
 // Init the scene
@@ -26,21 +28,15 @@ scene.background = new THREE.Color(BACKGROUND_COLOR);
 // Init the renderer
 const canvas = document.querySelector('#c');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.shadowMap.enabled = true;
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = false;
 document.body.appendChild(renderer.domElement);
 
 // Add a camera
-let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 0, 2);
 camera.rotation.set(0, 0, 0);
-// camera.position.set(-0.0023950808291633707, 0.0004497540766135944, 0.0019936118785608002);
-// camera.rotation.set(-0.22188318403486668, -0.8643915982052599, -0.16995666717523358);
-
-// Camera helper
-// let cameraHelper = new THREE.CameraHelper(camera);
-// scene.add(cameraHelper);
 
 // Add controls
 let controls = new OrbitControls(camera, renderer.domElement);
@@ -75,8 +71,9 @@ hemisphereLight.position.set(0, 50, 0);
 scene.add(hemisphereLight);
 
 // Add directional light to scene
-let directionalLight = new THREE.DirectionalLight(0xffffff, 0.54);
-directionalLight.position.set(-8, 12, 8);
+let directionalLight = new THREE.DirectionalLight(0xfffedb, 0.50);
+// directionalLight.position.set(-8, 12, 8);
+directionalLight.position.set(30, 5, 0);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize = new THREE.Vector2(1024, 1024);
 scene.add(directionalLight);
@@ -104,22 +101,25 @@ let loadergManager = new THREE.LoadingManager(function(){
     if(theModel){
         // Set the models initial variables
         theModel.scale.set(1, 1, 1);
-        theModel.rotation.x = 300;
-        theModel.position.x = -1.5;
-        theModel.position.y = -1.5;
-        theModel.position.z = 0;
+        // theModel.rotation.x = 300; // 3ds fix position
+        theModel.position.set(-1.5, -1.5, 0);
 
         theModel.traverse(o => {
             if(o.isMesh){
+
                 // Set shadows
                 o.castShadow = true;
                 o.receiveShadow = true;
+
+                if(o.name == 'Ventana_1_(Agua1)' || o.name == 'Ventana_2_(Agua_1)'){
+                    o.material.opacity = 0.08;
+                }
 
                 // Find walls
                 if(Array.isArray(o.material)){
                     for(let mat of o.material){
                         // Set opacity
-                        mat.opacity = 1;
+                        // mat.opacity = 1;
 
                         // Set a new property to identify this object
                         o.nameId = setObjectNameId(mat.name);
@@ -127,7 +127,7 @@ let loadergManager = new THREE.LoadingManager(function(){
                 }
                 else{
                     // Set opacity
-                    o.material.opacity = 1;
+                    // o.material.opacity = 1;
 
                     // Set a new property to identify this object
                     o.nameId = setObjectNameId(o.material.name);
@@ -148,11 +148,38 @@ let loadergManager = new THREE.LoadingManager(function(){
     }
 });
 
+// Load tga
+// let loaderTga = new TGALoader();
+// let textureMadera = loaderTga.load( '../assets/models/living/textures/Madera_1_AO.tga' );
+// let materialMadera = new THREE.MeshPhongMaterial( { color: 0x946F43, map: textureMadera } );
+
 // Load 3ds
-var loader = new TDSLoader(loadergManager);
-loader.setResourcePath('../assets/models/room/');
-loader.load('../assets/models/room/room.3ds', function(object){
-    theModel = object;
+// let loader = new TDSLoader(loadergManager);
+// loader.setResourcePath('../assets/models/living/');
+// loader.load('../assets/models/living/living.3ds', function(object){
+//     theModel = object;
+// });
+
+// Load obj / mtl
+// let loader = new MTLLoader(loadergManager);
+// loader.setPath('../assets/models/living/');
+// loader.load('living.mtl', function(materials){
+//     materials.preload();
+
+//     new OBJLoader(loadergManager)
+//         .setMaterials(materials)
+//         .setPath('../assets/models/living/')
+//         .load('living.obj', function(object){
+//             theModel = object;
+//         });
+// });
+
+// Load gltf
+let loader = new GLTFLoader(loadergManager);
+loader.setPath('../assets/models/living/');
+loader.load('living.gltf', function(object){
+    scene.add(object.scene);
+    theModel = object.scene.children[0];
 });
 
 // Debug
@@ -204,7 +231,14 @@ function animate() {
     }
 }
 
-animate();
+// WebGL compatibility check
+if(WEBGL.isWebGLAvailable()){
+    animate();
+}
+else{
+    let warning = WEBGL.getWebGLErrorMessage();
+    document.getElementById('webgl').appendChild(warning);
+}
 
 // Function - New resizing method
 function resizeRendererToDisplaySize(renderer) {
@@ -228,7 +262,7 @@ function buildColors(colors) {
     for(let [i, color] of colors.entries()){
         let swatch = document.createElement('div');
         swatch.classList.add('tray__swatch');
-        swatch.style.background = "#" + color.color;
+        swatch.style.background = '#' + color.color;
         swatch.setAttribute('data-key', i);
         swatch.setAttribute('title', '0x' + color.color);
         TRAY.append(swatch);
@@ -238,7 +272,7 @@ function buildColors(colors) {
 buildColors(colors);
 
 // Select Option
-const options = document.querySelectorAll(".option");
+const options = document.querySelectorAll('.option');
 
 for (const option of options){
     option.addEventListener('click', selectOption);
@@ -256,7 +290,7 @@ function selectOption(e){
 }
 
 // Swatches
-const swatches = document.querySelectorAll(".tray__swatch");
+const swatches = document.querySelectorAll('.tray__swatch');
 
 for(const swatch of swatches){
     swatch.addEventListener('click', selectSwatch);
@@ -342,7 +376,7 @@ function slide(wrapper, items){
         }
 
         if(items.offsetLeft - posX2 <= 0 && items.offsetLeft - posX2 >= difference){
-            items.style.left = items.offsetLeft - posX2 + "px";
+            items.style.left = items.offsetLeft - posX2 + 'px';
         }
     }
 
@@ -356,7 +390,7 @@ function slide(wrapper, items){
 
         }
         else{
-            items.style.left = posInitial + "px";
+            items.style.left = posInitial + 'px';
         }
 
         document.onmouseup = null;
@@ -365,3 +399,21 @@ function slide(wrapper, items){
 }
 
 slide(slider, sliderItems);
+
+// Sidebar
+let sidebarOpen = false;
+let sidebar = document.getElementById('sidebar');
+
+/* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
+function sidebarClick() {
+    if(sidebarOpen){
+        sidebar.style.width = '0';
+    }
+    else{
+        sidebar.style.width = '250px';
+    }
+
+    sidebarOpen = !sidebarOpen;
+}
+
+document.getElementById('openbtn').addEventListener('click', sidebarClick);
