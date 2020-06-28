@@ -10,6 +10,7 @@
 
     <link rel="shortcut icon" href="favicon.ico">
     <link href="https://fonts.googleapis.com/css?family=Raleway:500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/loader.css" />
@@ -49,13 +50,13 @@
 
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
-        <div class="btns">
-            <a class="btn" id="openbtn">&#9776;</a>
-        </div>
+        <div class="sidebar-image"></div>
 
-        <div class="content">
-            <div class="header">
-                <h3>Busca tu color</h3>
+        <a id="sidebar-open-btn" title="Open / Close"><i id="sidebar-open-icon" class="fa fa-angle-left"></i></a>
+
+        <div id="sidebar-content" class="sidebar-content">
+            <div class="sidebar-header">
+                <h3>Find your color</h3>
                 <hr/>
             </div>
 
@@ -63,17 +64,20 @@
             <div class="color-picker">
                 <canvas id="picker"></canvas>
 
-                <input id="color" value="#54aedb">
+                <input id="color" value="#54aedb" style="display: none">
                 
-                <script>
-                    new KellyColorPicker({place : 'picker', input : 'color', size : 150});
-                </script>
+                <script>new KellyColorPicker({place : 'picker', input : 'color', size : 150});</script>
             </div>
 
-            <div class="header">
-                <h3>Selecciona color</h3>
+            <div class="sidebar-header">
+                <h3>Pick a color</h3>
                 <hr/>
             </div>
+
+            <!-- Colors tray -->
+            <table id="js-tray" class="tray">
+                <tbody id="js-tray-slide"></tbody>
+            </table>
         </div>
     </div>
 
@@ -88,11 +92,6 @@
             <div class="info__message">
                 <p><strong>&nbsp;Grab&nbsp;</strong> to rotate. <strong>&nbsp;Scroll&nbsp;</strong> to zoom. <strong>&nbsp;Drag&nbsp;</strong> swatches to view more.</p>
             </div>
-        </div>
-
-        <!-- This tray will be filled with colors via JS, and the ability to slide this panel will be added in with a lightweight slider script (no dependency used for this) -->
-        <div id="js-tray" class="tray">
-            <div id="js-tray-slide" class="tray__slide"></div>
         </div>
     </div>
 

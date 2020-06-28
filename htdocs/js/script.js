@@ -27,7 +27,7 @@ scene.background = new THREE.Color(BACKGROUND_COLOR);
 
 // Init the renderer
 const canvas = document.querySelector('#c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = false;
@@ -142,9 +142,7 @@ let loadergManager = new THREE.LoadingManager(function(){
         // Add the model to the scene
         scene.add(theModel);
 
-        // Remove the loader
-        LOADER.remove();
-        DRAG_NOTICE.classList.add('start');
+        start();
     }
 });
 
@@ -259,13 +257,31 @@ function resizeRendererToDisplaySize(renderer) {
 
 // Function - Build Colors
 function buildColors(colors) {
+    let colorsLength = colors.length -1;
+    let counter = 0;
+    let tr = document.createElement('tr');
+    tr.classList.add('tray__swatch__group');
+
     for(let [i, color] of colors.entries()){
-        let swatch = document.createElement('div');
+        counter++;
+
+        if(counter >= 5){
+            counter = 1;
+            TRAY.append(tr);
+            tr = document.createElement('tr');
+            tr.classList.add('tray__swatch__group');
+        }
+
+        let swatch = document.createElement('td');
         swatch.classList.add('tray__swatch');
         swatch.style.background = '#' + color.color;
         swatch.setAttribute('data-key', i);
         swatch.setAttribute('title', '0x' + color.color);
-        TRAY.append(swatch);
+        tr.append(swatch);
+
+        if(i == colorsLength){
+            TRAY.append(tr);
+        }
     }
 }
 
@@ -328,92 +344,113 @@ function setMaterial(parent, type, mtl){
     });
 }
 
-let slider = document.getElementById('js-tray'),sliderItems = document.getElementById('js-tray-slide'),difference;
+// let slider = document.getElementById('js-tray'),sliderItems = document.getElementById('js-tray-slide'),difference;
 
-function slide(wrapper, items){
-    let posX1 = 0,
-    posX2 = 0,
-    posInitial,
-    threshold = 20,
-    posFinal,
-    slides = items.getElementsByClassName('tray__swatch');
+// function slide(wrapper, items){
+//     let posX1 = 0,
+//     posX2 = 0,
+//     posInitial,
+//     threshold = 20,
+//     posFinal,
+//     slides = items.getElementsByClassName('tray__swatch');
 
-    // Mouse events
-    items.onmousedown = dragStart;
+//     // Mouse events
+//     items.onmousedown = dragStart;
 
-    // Touch events
-    items.addEventListener('touchstart', dragStart);
-    items.addEventListener('touchend', dragEnd);
-    items.addEventListener('touchmove', dragAction);
+//     // Touch events
+//     items.addEventListener('touchstart', dragStart);
+//     items.addEventListener('touchend', dragEnd);
+//     items.addEventListener('touchmove', dragAction);
 
 
-    function dragStart(e){
-        e = e || window.event;
-        posInitial = items.offsetLeft;
-        difference = sliderItems.offsetWidth - slider.offsetWidth;
-        difference = difference * -1;
+//     function dragStart(e){
+//         e = e || window.event;
+//         posInitial = items.offsetLeft;
+//         difference = sliderItems.offsetWidth - slider.offsetWidth;
+//         difference = difference * -1;
 
-        if(e.type == 'touchstart'){
-            posX1 = e.touches[0].clientX;
-        }
-        else{
-            posX1 = e.clientX;
-            document.onmouseup = dragEnd;
-            document.onmousemove = dragAction;
-        }
-    }
+//         if(e.type == 'touchstart'){
+//             posX1 = e.touches[0].clientX;
+//         }
+//         else{
+//             posX1 = e.clientX;
+//             document.onmouseup = dragEnd;
+//             document.onmousemove = dragAction;
+//         }
+//     }
 
-    function dragAction(e){
-        e = e || window.event;
+//     function dragAction(e){
+//         e = e || window.event;
 
-        if(e.type == 'touchmove'){
-            posX2 = posX1 - e.touches[0].clientX;
-            posX1 = e.touches[0].clientX;
-        }
-        else{
-            posX2 = posX1 - e.clientX;
-            posX1 = e.clientX;
-        }
+//         if(e.type == 'touchmove'){
+//             posX2 = posX1 - e.touches[0].clientX;
+//             posX1 = e.touches[0].clientX;
+//         }
+//         else{
+//             posX2 = posX1 - e.clientX;
+//             posX1 = e.clientX;
+//         }
 
-        if(items.offsetLeft - posX2 <= 0 && items.offsetLeft - posX2 >= difference){
-            items.style.left = items.offsetLeft - posX2 + 'px';
-        }
-    }
+//         if(items.offsetLeft - posX2 <= 0 && items.offsetLeft - posX2 >= difference){
+//             items.style.left = items.offsetLeft - posX2 + 'px';
+//         }
+//     }
 
-    function dragEnd(e){
-        posFinal = items.offsetLeft;
+//     function dragEnd(e){
+//         posFinal = items.offsetLeft;
 
-        if(posFinal - posInitial < -threshold) {
+//         if(posFinal - posInitial < -threshold) {
 
-        }
-        else if(posFinal - posInitial > threshold){
+//         }
+//         else if(posFinal - posInitial > threshold){
 
-        }
-        else{
-            items.style.left = posInitial + 'px';
-        }
+//         }
+//         else{
+//             items.style.left = posInitial + 'px';
+//         }
 
-        document.onmouseup = null;
-        document.onmousemove = null;
-    }
-}
+//         document.onmouseup = null;
+//         document.onmousemove = null;
+//     }
+// }
 
-slide(slider, sliderItems);
+// slide(slider, sliderItems);
 
 // Sidebar
 let sidebarOpen = false;
 let sidebar = document.getElementById('sidebar');
+let openIcon = document.getElementById('sidebar-open-icon');
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function sidebarClick() {
     if(sidebarOpen){
         sidebar.style.width = '0';
+        sidebar.style.overflowY = 'hidden';
+        openIcon.className = 'fa fa-angle-left'; // <
     }
     else{
         sidebar.style.width = '250px';
+        sidebar.style.overflowY = 'auto';
+        openIcon.className = 'fa fa-angle-left open'; // >
     }
 
     sidebarOpen = !sidebarOpen;
 }
 
-document.getElementById('openbtn').addEventListener('click', sidebarClick);
+document.getElementById('sidebar-open-btn').addEventListener('click', sidebarClick);
+
+// Screenshot btn
+// function screenShot() {
+//     window.open( renderer.domElement.toDataURL('image/png'), 'Final' );
+//     return false;
+// }
+// document.getElementById('screenshotbtn').addEventListener('click', screenShot);
+
+function start(){
+    // Remove the loader
+    LOADER.remove();
+    DRAG_NOTICE.classList.add('start');
+
+    // Side menu open effect
+    document.getElementById('sidebar-open-btn').click();
+}
