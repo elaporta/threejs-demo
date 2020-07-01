@@ -26,6 +26,5 @@ export const COLORS = [
     { color: 'F2A97F' },
     { color: 'D85F52' },
     { color: 'D92E37' },
-    { color: 'FC9736' },
-
+    { color: 'FC9736' }
 ];

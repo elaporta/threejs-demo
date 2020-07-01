@@ -26,17 +26,26 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(BACKGROUND_COLOR);
 
 // Init the renderer
-const canvas = document.querySelector('#c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+const container = document.getElementById('model-container');
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(container.offsetHeight, container.offsetHeight);
 renderer.shadowMap.enabled = false;
-document.body.appendChild(renderer.domElement);
+container.appendChild(renderer.domElement);
 
 // Add a camera
-let camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(35, container.offsetHeight / container.offsetHeight, 0.1, 1000);
 camera.position.set(0, 0, 2);
 camera.rotation.set(0, 0, 0);
+resize();
+
+// Camera resizing
+function resize(){
+    const container = document.getElementById('model-container');
+    camera.aspect = container.offsetWidth / container.offsetHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.offsetWidth, container.offsetHeight);
+}
+window.addEventListener('resize', resize, false);
 
 // Add controls
 let controls = new OrbitControls(camera, renderer.domElement);
@@ -180,16 +189,7 @@ loader.load('living.gltf', function(object){
     theModel = object.scene.children[0];
 });
 
-// Debug
-let cameraRotationY = 0;
-function debug(){
-    if(cameraRotationY != camera.rotation.y){
-        cameraRotationY = camera.rotation.y;
-        console.log('camera position: ', camera.position);
-        console.log('camera rotation: ', camera.rotation);
-    }
-}
-
+// Key controls movement
 document.onkeydown = function(e){
     switch(e.keyCode){
         case 37: // left
@@ -217,16 +217,9 @@ document.onkeydown = function(e){
 
 
 function animate() {
-    // debug();
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
-
-    if(resizeRendererToDisplaySize(renderer)){
-        const canvas = renderer.domElement;
-        camera.aspect = canvas.clientWidth / canvas.clientHeight;
-        camera.updateProjectionMatrix();
-    }
 }
 
 // WebGL compatibility check
@@ -234,25 +227,23 @@ if(WEBGL.isWebGLAvailable()){
     animate();
 }
 else{
+    DRAG_NOTICE.remove();
     let warning = WEBGL.getWebGLErrorMessage();
     document.getElementById('webgl').appendChild(warning);
 }
 
-// Function - New resizing method
-function resizeRendererToDisplaySize(renderer) {
-    const canvas = renderer.domElement;
-    let width = window.innerWidth;
-    let height = window.innerHeight;
-    let canvasPixelWidth = canvas.width / window.devicePixelRatio;
-    let canvasPixelHeight = canvas.height / window.devicePixelRatio;
+function start(){
 
-    const needResize = canvasPixelWidth !== width || canvasPixelHeight !== height;
+    // Remove the loader
+    LOADER.remove();
+    DRAG_NOTICE.classList.add('start');
 
-    if(needResize){
-        renderer.setSize(width, height, false);
-    }
+    // Side menu open effect
+    document.getElementById('sidebar-open-btn').click();
+}
 
-    return needResize;
+function aca(){
+    console.log('aca');
 }
 
 // Function - Build Colors
@@ -317,11 +308,13 @@ function selectSwatch(e) {
     let new_mtl;
     let option = e.target;
 
-    for (const otherSwatch of swatches) {
+    for(const otherSwatch of swatches){
         otherSwatch.classList.remove('--is-active');
+        otherSwatch.innerHTML = '';
     }
 
     option.classList.add('--is-active');
+    option.innerHTML = '<i class="fa fa-check"></i>';
 
     new_mtl = new THREE.MeshPhongMaterial({
         color: parseInt('0x' + color.color),
@@ -344,94 +337,26 @@ function setMaterial(parent, type, mtl){
     });
 }
 
-// let slider = document.getElementById('js-tray'),sliderItems = document.getElementById('js-tray-slide'),difference;
-
-// function slide(wrapper, items){
-//     let posX1 = 0,
-//     posX2 = 0,
-//     posInitial,
-//     threshold = 20,
-//     posFinal,
-//     slides = items.getElementsByClassName('tray__swatch');
-
-//     // Mouse events
-//     items.onmousedown = dragStart;
-
-//     // Touch events
-//     items.addEventListener('touchstart', dragStart);
-//     items.addEventListener('touchend', dragEnd);
-//     items.addEventListener('touchmove', dragAction);
-
-
-//     function dragStart(e){
-//         e = e || window.event;
-//         posInitial = items.offsetLeft;
-//         difference = sliderItems.offsetWidth - slider.offsetWidth;
-//         difference = difference * -1;
-
-//         if(e.type == 'touchstart'){
-//             posX1 = e.touches[0].clientX;
-//         }
-//         else{
-//             posX1 = e.clientX;
-//             document.onmouseup = dragEnd;
-//             document.onmousemove = dragAction;
-//         }
-//     }
-
-//     function dragAction(e){
-//         e = e || window.event;
-
-//         if(e.type == 'touchmove'){
-//             posX2 = posX1 - e.touches[0].clientX;
-//             posX1 = e.touches[0].clientX;
-//         }
-//         else{
-//             posX2 = posX1 - e.clientX;
-//             posX1 = e.clientX;
-//         }
-
-//         if(items.offsetLeft - posX2 <= 0 && items.offsetLeft - posX2 >= difference){
-//             items.style.left = items.offsetLeft - posX2 + 'px';
-//         }
-//     }
-
-//     function dragEnd(e){
-//         posFinal = items.offsetLeft;
-
-//         if(posFinal - posInitial < -threshold) {
-
-//         }
-//         else if(posFinal - posInitial > threshold){
-
-//         }
-//         else{
-//             items.style.left = posInitial + 'px';
-//         }
-
-//         document.onmouseup = null;
-//         document.onmousemove = null;
-//     }
-// }
-
-// slide(slider, sliderItems);
-
 // Sidebar
 let sidebarOpen = false;
-let sidebar = document.getElementById('sidebar');
-let openIcon = document.getElementById('sidebar-open-icon');
 
 /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
 function sidebarClick() {
+    const sidebar = document.getElementById('sidebar');
+    const openBtn = document.getElementById('sidebar-open-btn');
+    const openIcon = document.getElementById('sidebar-open-icon');
+
     if(sidebarOpen){
-        sidebar.style.width = '0';
-        sidebar.style.overflowY = 'hidden';
+        openBtn.style.right = '0';
         openIcon.className = 'fa fa-angle-left'; // <
+        sidebar.style.width = '0';
+        sidebar.style.padding = '0';
     }
     else{
-        sidebar.style.width = '250px';
-        sidebar.style.overflowY = 'auto';
+        openBtn.style.right = '250px';
         openIcon.className = 'fa fa-angle-left open'; // >
+        sidebar.style.width = '260px';
+        sidebar.style.padding = '1.5rem';
     }
 
     sidebarOpen = !sidebarOpen;
@@ -439,18 +364,32 @@ function sidebarClick() {
 
 document.getElementById('sidebar-open-btn').addEventListener('click', sidebarClick);
 
-// Screenshot btn
-// function screenShot() {
-//     window.open( renderer.domElement.toDataURL('image/png'), 'Final' );
-//     return false;
-// }
-// document.getElementById('screenshotbtn').addEventListener('click', screenShot);
-
-function start(){
-    // Remove the loader
-    LOADER.remove();
-    DRAG_NOTICE.classList.add('start');
-
-    // Side menu open effect
-    document.getElementById('sidebar-open-btn').click();
+// Screenshot function
+const saveFile = function (strData, filename){
+    let link = document.createElement('a');
+    if(typeof link.download === 'string'){
+        document.body.appendChild(link); //Firefox requires the link to be in the body
+        link.download = filename;
+        link.href = strData;
+        link.click();
+        document.body.removeChild(link); //remove the link when done
+    }
+    else{
+        location.replace(uri);
+    }
 }
+function screenShot(){
+    let imgData, imgNode;
+    let strDownloadMime = 'image/octet-stream';
+
+    try{
+        let strMime = 'image/jpeg';
+        imgData = renderer.domElement.toDataURL(strMime);
+        saveFile(imgData.replace(strMime, strDownloadMime), 'test.jpg');
+    }
+    catch(e){
+        console.log(e);
+        return;
+    }
+}
+document.getElementById('screenshotbtn').addEventListener('click', screenShot);
