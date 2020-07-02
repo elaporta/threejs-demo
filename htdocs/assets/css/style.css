@@ -175,10 +175,17 @@ canvas {
     margin: auto;
 }
 
+.tray thead tbody {
+    display: block;
+}
+
 .tray tbody {
+    height: 150px;
     max-height: 150px;
     width: 150px;
     border-collapse: collapse;
+    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .tray__swatch__group {
@@ -405,16 +412,6 @@ canvas {
 
 .color-picker {
     margin-bottom: 10px;
-}
-
-.color-picker input {
-    border: 0px;
-    height: 32px;
-    width: 150px;
-    margin-top: 10px;
-    text-align: center;
-    font-family: 'Raleway', sans-serif;
-    font-weight: bold;
 }
 
 .share-btn {

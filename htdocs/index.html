@@ -14,9 +14,6 @@
 
     <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/loader.css" />
-
-    <!-- Color picker -->
-    <script src="js/html5kellycolorpicker/html5kellycolorpicker.min.js"></script>
 </head>
 
 <body>
@@ -72,6 +69,7 @@
             <div class="sidebar-main">
                 <div class="sidebar-content">
 
+                    <!-- Header -->
                     <div class="sidebar-header">
                         <h3>Find your color</h3>
                         <hr/>
@@ -79,13 +77,10 @@
 
                     <!-- Color picker -->
                     <div class="color-picker">
-                        <canvas id="picker"></canvas>
-
-                        <input id="pickedColor" value="#54aedb" style="display: none">
-                        
-                        <script>new KellyColorPicker({ place : 'picker', input : 'pickedColor', size : 150 });</script>
+                        <canvas id="color-picker"></canvas>
                     </div>
 
+                    <!-- Header -->
                     <div class="sidebar-header">
                         <h3>Pick a color</h3>
                         <hr/>
@@ -96,6 +91,7 @@
                         <tbody id="js-tray-slide"></tbody>
                     </table>
 
+                    <!-- Header -->
                     <div class="sidebar-header">
                         <h3>Share it</h3>
                         <hr/>
