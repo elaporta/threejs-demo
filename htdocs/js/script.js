@@ -3,8 +3,10 @@ import * as THREE from './three.js/build/three.module.js';
 import { WEBGL } from './three.js/examples/jsm/loaders/WEBGL.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
+
 import { COLORS } from './colors.js';
 import { KellyColorPicker } from './html5kellycolorpicker/html5kellycolorpicker.min.js';
+
 // import { TDSLoader } from './three.js/examples/jsm/loaders/TDSLoader.js';
 // import { MTLLoader } from './three.js/examples/jsm/loaders/MTLLoader.js';
 // import { OBJLoader } from './three.js/examples/jsm/loaders/OBJLoader.js';
@@ -35,7 +37,6 @@ container.appendChild(renderer.domElement);
 
 // Add a camera
 let camera = new THREE.PerspectiveCamera(35, container.offsetHeight / container.offsetHeight, 0.1, 1000);
-// camera.position.set(0, 0, 2);
 camera.position.set(-0.2963585789463235, 1.2246467991473552e-16, 4.230488252069703);
 camera.rotation.set(0, 0, 0);
 resize();
@@ -86,24 +87,66 @@ let ambientLight = new THREE.AmbientLight(0x404040); // soft white light
 scene.add(ambientLight);
 
 // Add directional light to scene
-let directionalLight = new THREE.DirectionalLight(0xfffedb, 0.50);
-directionalLight.position.set(-9, 1.5, 2);
+let directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+directionalLight.position.set(-8.4, -.5, 1);
 directionalLight.castShadow = true;
 directionalLight.shadow.mapSize = new THREE.Vector2(2048, 2048);
 scene.add(directionalLight);
 
 // Directional light helper
 let directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-scene.add(directionalLightHelper);
+// scene.add(directionalLightHelper);
 
 // Add point light to scene
-let pointLight = new THREE.PointLight(0xfffedb, 1, 100);
-pointLight.position.set(-0.5, 1.2, 0);
+let pointLight = new THREE.PointLight(0xffffff, 1.2, 10);
+pointLight.position.set(-2.5, -0.1, -1.5);
 scene.add(pointLight);
 
 // Point light helper
 let pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
-scene.add(pointLightHelper);
+// scene.add(pointLightHelper);
+
+// Texture Loader
+let textureLoader = new THREE.TextureLoader();
+let map, normalMap, roughnessMap, displacementMap, specularMap;
+
+// Walls textures
+map = textureLoader.load('../assets/textures/T01_PAREDES/T01.jpg');
+map.wrapS = THREE.RepeatWrapping;
+map.wrapT = THREE.RepeatWrapping;
+displacementMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_DISP_3K.jpg');
+roughnessMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_GLOSS_3K.jpg');
+const WALLMAT = new THREE.MeshPhongMaterial({
+    map: map,
+    roughnessMap: roughnessMap,
+    displacementMap: displacementMap,
+    displacementScale: 0
+});
+
+// Floor Textures
+map = textureLoader.load('../assets/textures/T02_PISO/T02.jpg');
+map.wrapS = THREE.RepeatWrapping;
+map.wrapT = THREE.RepeatWrapping;
+normalMap = textureLoader.load('../assets/textures/T02_PISO/T02_NRM_3K.jpg');
+roughnessMap = textureLoader.load('../assets/textures/T02_PISO/T02_GLOSS_3K.jpg');
+const FLOORMAT = new THREE.MeshPhongMaterial({
+    map: map,
+    normalMap: normalMap,
+    roughnessMap: roughnessMap,
+});
+
+// Ceiling Textures
+map = textureLoader.load('../assets/textures/T03_TECHO/T03.jpg');
+map.wrapS = THREE.RepeatWrapping;
+map.wrapT = THREE.RepeatWrapping;
+normalMap = textureLoader.load('../assets/textures/T03_TECHO/T03_NRM16_3K.jpg');
+specularMap = textureLoader.load('../assets/textures/T03_TECHO/T03_REFL_3K.jpg');
+const CEILINGMAT = new THREE.MeshPhongMaterial({
+    map: map,
+    normalMap: normalMap,
+    specular: '0xffffff',
+    specularMap: specularMap
+});
 
 function setObjectNameId(name = null){
     let nameId = null;
@@ -128,8 +171,11 @@ let loadergManager = new THREE.LoadingManager(function(){
     if(theModel){
         // Set the models initial variables
         theModel.scale.set(1, 1, 1);
+        // theModel.position.set(-1.5, -1.5, 0);
+        theModel.position.set(-4.2, -1.8, 4.2);
         // theModel.rotation.x = 300; // 3ds fix position
-        theModel.position.set(-1.5, -1.5, 0);
+        theModel.castShadow = true;
+        theModel.receiveShadow = true;
 
         theModel.traverse(o => {
             if(o.isMesh){
@@ -137,30 +183,30 @@ let loadergManager = new THREE.LoadingManager(function(){
                 // Set shadows
                 o.castShadow = true;
                 o.receiveShadow = true;
-                // o.shininess = 0;
-
-                if(o.name == 'Ventana_1_(Agua1)' || o.name == 'Ventana_2_(Agua_1)'){
-                    o.material.opacity = 0.08;
-                    o.visible = false;
-                }
 
                 // Find walls
-                if(Array.isArray(o.material)){
-                    for(let mat of o.material){
-                        // Set opacity
-                        // mat.opacity = 1;
+                // if(Array.isArray(o.material)){console.log('aaaa');
+                //     for(let mat of o.material){
+                //         // Set a new property to identify this object
+                //         o.nameId = setObjectNameId(mat.name);
+                //     }
+                // }
+                // else{}
 
-                        // Set a new property to identify this object
-                        o.nameId = setObjectNameId(mat.name);
-                    }
+                if(o.material.name == 'T01 - PAREDES'){
+                    o.material = WALLMAT;
                 }
-                else{
-                    // Set opacity
-                    // o.material.opacity = 1;
 
-                    // Set a new property to identify this object
-                    o.nameId = setObjectNameId(o.material.name);
+                if(o.material.name == 'T02 - PISO'){
+                    o.material = FLOORMAT;
                 }
+
+                if(o.material.name == 'T03 - TECHO'){
+                    o.material = CEILINGMAT;
+                }
+
+                // Set a new property to identify this object
+                o.nameId = setObjectNameId(o.material.name);
 
                 if(o.nameId != null){
                     o.material = INITIAL_MTL;
@@ -204,9 +250,9 @@ let loadergManager = new THREE.LoadingManager(function(){
 // Load gltf
 let loader = new GLTFLoader(loadergManager);
 loader.setPath('../assets/models/living/');
-loader.load('living.gltf', function(object){
-    scene.add(object.scene);
-    theModel = object.scene.children[0];
+loader.load('living.gltf', function(gltf){
+    scene.add(gltf.scene);
+    theModel = gltf.scene.children[0];
 });
 
 function debugInfo(){
@@ -214,8 +260,12 @@ function debugInfo(){
         console.log('Model Position: ', theModel.position);
         console.log('Model Rotation: ', theModel.rotation);
     }
+
     console.log('Camera Position: ', camera.position);
     console.log('Camera Rotation: ', camera.rotation);
+
+    console.log('Point Light Position: ', pointLight.position);
+    console.log('Directional Light Position: ', directionalLight.position);
 }
 
 // Key controls movement
@@ -240,11 +290,23 @@ document.onkeydown = function(e){
         break;
 
         // the model position for up/down
+        case 65: // a
+            pointLight.position.x += 0.1;
+        break;
+        case 68: // d
+            pointLight.position.x -= 0.1;
+        break;
+        case 69: // e
+            pointLight.position.z += 0.1;
+        break;
+        case 81: // q
+            pointLight.position.z -= 0.1;
+        break;
         case 83: // s
-            theModel.position.y += 0.1;
+            pointLight.position.y += 0.1;
         break;
         case 87: // w
-            theModel.position.y -= 0.1;
+            pointLight.position.y -= 0.1;
         break;
     }
 };
@@ -316,7 +378,7 @@ const kellyColorPicker = new KellyColorPicker({
     inputFormat: 'rgba',
     userEvents: {
         change: function(e){
-            console.log(e.getCurColorRgb());
+            // console.log(e.getCurColorRgb());
 
             let newColors = COLORS.slice(0, 16);
             buildColors(newColors);
