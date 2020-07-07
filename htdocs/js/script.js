@@ -3,50 +3,61 @@ import * as THREE from './three.js/build/three.module.js';
 import { WEBGL } from './three.js/examples/jsm/loaders/WEBGL.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
-
-import { COLORS } from './colors.js';
-import { KellyColorPicker } from './html5kellycolorpicker/html5kellycolorpicker.min.js';
+import { Reflector } from './three.js/examples/jsm/objects/Reflector.js';
 
 // import { TDSLoader } from './three.js/examples/jsm/loaders/TDSLoader.js';
 // import { MTLLoader } from './three.js/examples/jsm/loaders/MTLLoader.js';
 // import { OBJLoader } from './three.js/examples/jsm/loaders/OBJLoader.js';
 // import { TGALoader } from './three.js/examples/jsm/loaders/TGALoader.js';
 
+import { COLORS } from './colors/colorsSorted.js';
+import { KellyColorPicker } from './colors/html5kellycolorpicker.min.js';
+import { ntc } from './colors/ntc.js';
+
+// Dom elements
 const LOADER = document.getElementById('js-loader');
 const TRAY = document.getElementById('js-tray-slide');
 const DRAG_NOTICE = document.getElementById('js-drag-notice');
 
-let theModel;
-let activeOption = 'all';
-
+const CONTAINER = document.getElementById('model-container');
+const WIDTH = CONTAINER.offsetWidth;
+const HEIGHT = CONTAINER.offsetHeight;
 const BACKGROUND_COLOR = 0xf1f1f1;
 const INITIAL_MTL = new THREE.MeshPhongMaterial({ color: 0xF2DABA, shininess: 10 });
+
+// Private variables
+let theModel;
+let activeOption = 'all';
+let colors = [];
+let swatches;
+
+// Colors init
+ntc.init();
+colors = COLORS;
 
 // Init the scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(BACKGROUND_COLOR);
 
 // Init the renderer
-const container = document.getElementById('model-container');
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
-renderer.setSize(container.offsetHeight, container.offsetHeight);
+renderer.setSize(WIDTH, HEIGHT);
+renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
 // renderer.shadowMapType = THREE.PCFSoftShadowMap;
 // renderer.physicallyCorrectLights = true;
-container.appendChild(renderer.domElement);
+CONTAINER.appendChild(renderer.domElement);
 
 // Add a camera
-let camera = new THREE.PerspectiveCamera(35, container.offsetHeight / container.offsetHeight, 0.1, 1000);
+let camera = new THREE.PerspectiveCamera(35, WIDTH / HEIGHT, 0.1, 1000);
 camera.position.set(-0.2963585789463235, 1.2246467991473552e-16, 4.230488252069703);
 camera.rotation.set(0, 0, 0);
-resize();
 
 // Camera resizing
 function resize(){
-    const container = document.getElementById('model-container');
-    camera.aspect = container.offsetWidth / container.offsetHeight;
+    camera.aspect = CONTAINER.offsetWidth / CONTAINER.offsetHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(container.offsetWidth, container.offsetHeight);
+    renderer.setSize(CONTAINER.offsetWidth, CONTAINER.offsetHeight);
 }
 window.addEventListener('resize', resize, false);
 
@@ -108,63 +119,75 @@ let pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
 
 // Texture Loader
 let textureLoader = new THREE.TextureLoader();
-let map, normalMap, roughnessMap, displacementMap, specularMap;
+let map, normalMap, roughnessMap;
 
 // Walls textures
 map = textureLoader.load('../assets/textures/T01_PAREDES/T01.jpg');
 map.wrapS = THREE.RepeatWrapping;
 map.wrapT = THREE.RepeatWrapping;
-displacementMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_DISP_3K.jpg');
-roughnessMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_GLOSS_3K.jpg');
-const WALLMAT = new THREE.MeshPhongMaterial({
+normalMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_NRM.jpg');
+roughnessMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_ROUGH.jpg');
+const WALLMAT = new THREE.MeshStandardMaterial({
     map: map,
-    roughnessMap: roughnessMap,
-    displacementMap: displacementMap,
-    displacementScale: 0
+    normalMap: normalMap,
+    roughnessMap: roughnessMap
 });
 
 // Floor Textures
 map = textureLoader.load('../assets/textures/T02_PISO/T02.jpg');
 map.wrapS = THREE.RepeatWrapping;
 map.wrapT = THREE.RepeatWrapping;
-normalMap = textureLoader.load('../assets/textures/T02_PISO/T02_NRM_3K.jpg');
-roughnessMap = textureLoader.load('../assets/textures/T02_PISO/T02_GLOSS_3K.jpg');
-const FLOORMAT = new THREE.MeshPhongMaterial({
+normalMap = textureLoader.load('../assets/textures/T02_PISO/T02_NRM.jpg');
+roughnessMap = textureLoader.load('../assets/textures/T02_PISO/T02_ROUGH.jpg');
+const FLOORMAT = new THREE.MeshStandardMaterial({
     map: map,
     normalMap: normalMap,
     roughnessMap: roughnessMap,
+    transparent: true,
+    opacity: .8
 });
 
 // Ceiling Textures
 map = textureLoader.load('../assets/textures/T03_TECHO/T03.jpg');
 map.wrapS = THREE.RepeatWrapping;
 map.wrapT = THREE.RepeatWrapping;
-normalMap = textureLoader.load('../assets/textures/T03_TECHO/T03_NRM16_3K.jpg');
-specularMap = textureLoader.load('../assets/textures/T03_TECHO/T03_REFL_3K.jpg');
-const CEILINGMAT = new THREE.MeshPhongMaterial({
+normalMap = textureLoader.load('../assets/textures/T03_TECHO/T03_NRM.jpg');
+roughnessMap = textureLoader.load('../assets/textures/T03_TECHO/T03_ROUGH.jpg');
+const CEILINGMAT = new THREE.MeshStandardMaterial({
     map: map,
     normalMap: normalMap,
-    specular: '0xffffff',
-    specularMap: specularMap
+    roughnessMap: roughnessMap
 });
 
-function setObjectNameId(name = null){
-    let nameId = null;
+// Load ground mirror
+let groundGeometry = new THREE.PlaneBufferGeometry(10, 10);
+let groundMirror = new Reflector(groundGeometry, {
+    clipBias: 0.003,
+    textureWidth: WIDTH * window.devicePixelRatio,
+    textureHeight: HEIGHT * window.devicePixelRatio,
+    color: 0x777777 // or 0x889999
+});
+groundMirror.rotateX(- Math.PI / 2);
+groundMirror.position.y = -1.62;
+scene.add(groundMirror);
 
-    if(typeof name == 'string'){
-        if(name == 'Color_G01'){
-            nameId = 'wall-1';
-        }
-        else if(name == 'Color_G02'){
-            nameId = 'wall-2';
-        }
-        else if(name == 'Color_G03'){
-            nameId = 'wall-3';
-        }
-    }
+// function setObjectNameId(name = null){
+//     let nameId = null;
 
-    return nameId;
-}
+//     if(typeof name == 'string'){
+//         if(name == 'Color_G01'){
+//             nameId = 'wall-1';
+//         }
+//         else if(name == 'Color_G02'){
+//             nameId = 'wall-2';
+//         }
+//         else if(name == 'Color_G03'){
+//             nameId = 'wall-3';
+//         }
+//     }
+
+//     return nameId;
+// }
 
 // Loader manager
 let loadergManager = new THREE.LoadingManager(function(){
@@ -195,6 +218,7 @@ let loadergManager = new THREE.LoadingManager(function(){
 
                 if(o.material.name == 'T01 - PAREDES'){
                     o.material = WALLMAT;
+                    o.nameId = 'wall-1';
                 }
 
                 if(o.material.name == 'T02 - PISO'){
@@ -206,11 +230,11 @@ let loadergManager = new THREE.LoadingManager(function(){
                 }
 
                 // Set a new property to identify this object
-                o.nameId = setObjectNameId(o.material.name);
+                // o.nameId = setObjectNameId(o.material.name);
 
-                if(o.nameId != null){
-                    o.material = INITIAL_MTL;
-                }
+                // if(o.nameId != null){
+                //     o.material = INITIAL_MTL;
+                // }
             }
         });
 
@@ -219,6 +243,14 @@ let loadergManager = new THREE.LoadingManager(function(){
 
         start();
     }
+});
+
+// Load gltf
+let loader = new GLTFLoader(loadergManager);
+loader.setPath('../assets/models/living/');
+loader.load('living.gltf', function(gltf){
+    scene.add(gltf.scene);
+    theModel = gltf.scene.children[0];
 });
 
 // Load tga
@@ -247,14 +279,7 @@ let loadergManager = new THREE.LoadingManager(function(){
 //         });
 // });
 
-// Load gltf
-let loader = new GLTFLoader(loadergManager);
-loader.setPath('../assets/models/living/');
-loader.load('living.gltf', function(gltf){
-    scene.add(gltf.scene);
-    theModel = gltf.scene.children[0];
-});
-
+// Debug info
 function debugInfo(){
     if(theModel){
         console.log('Model Position: ', theModel.position);
@@ -266,6 +291,8 @@ function debugInfo(){
 
     console.log('Point Light Position: ', pointLight.position);
     console.log('Directional Light Position: ', directionalLight.position);
+
+    console.log('Ground Mirror Position: ', groundMirror.position);
 }
 
 // Key controls movement
@@ -358,18 +385,52 @@ function buildColors(colors) {
 
         let swatch = document.createElement('td');
         swatch.classList.add('tray__swatch');
-        swatch.style.background = 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')';
-        swatch.setAttribute('data-key', i);
-        // swatch.setAttribute('title', 'rgb(' + color.r + ', ' + color.g + ', ' + color.b + ')');
+        swatch.style.background = '#' + color.hex;
+        swatch.setAttribute('hex', color.hex);
+        swatch.setAttribute('title', color.name);
         tr.append(swatch);
 
         if(i == colorsLength){
             TRAY.append(tr);
         }
     }
+
+    // Swatches
+    swatches = document.querySelectorAll('.tray__swatch');
+
+    for(let swatch of swatches){
+        swatch.addEventListener('click', selectSwatch);
+    }
 }
 
 // buildColors(COLORS);
+
+// Sum rgb
+function sumRGBColor(r, g, b) {
+
+    // Summing the channels does not calculate brightness, so this is incorrect:
+    // return rgb[0] + rgb[1] + rgb[2];
+
+    // To calculate relative luminance under sRGB and RGB colorspaces that use Rec. 709:
+    return 0.2126*r + 0.7152*g + 0.0722*b;
+}
+
+// Sort colors function
+// function sortColors(){
+//     colors = COLORS.sort(function (c1, c2) {
+//         return sumRGBColor(c1.r, c1.g, c1.b) > sumRGBColor(c2.r, c2.g, c2.b);
+//     });
+
+//     let id = 1;
+//     for(let i in colors){
+//         let cat = ntc.name(colors[i].hex);
+//         colors[i].category = cat[3];
+//         colors[i].id = id;
+//         id++;
+//         console.log(JSON.stringify(colors[i]));
+//     }
+// }
+// sortColors();
 
 // Init color picker
 const kellyColorPicker = new KellyColorPicker({
@@ -378,13 +439,37 @@ const kellyColorPicker = new KellyColorPicker({
     inputFormat: 'rgba',
     userEvents: {
         change: function(e){
-            // console.log(e.getCurColorRgb());
-
-            let newColors = COLORS.slice(0, 16);
+            let newColors = getMatchedColors(e.getCurColorRgb(), e.getCurColorHex());
             buildColors(newColors);
         }
     }
 });
+
+function getMatchedColors(pickedRgb, pickedHex){
+    let targetValue = sumRGBColor(pickedRgb.r, pickedRgb.g, pickedRgb.b);
+    let targetCategory = ntc.name(pickedHex)[3];
+
+    let result = colors.filter(function(c){
+        let match = false;
+        let currentValue = sumRGBColor(c.r, c.g, c.b);
+        let lessValue = currentValue - 50;
+        let biggerValue = currentValue + 50;
+
+        if(targetCategory == c.category){
+            if((targetValue >= lessValue) && (targetValue <= biggerValue)){
+                match = true;
+            }
+        }
+
+        return match;
+    });
+
+    if(result.length == 0){
+        result = colors;
+    }
+
+    return result;
+}
 
 // Select Option
 const options = document.querySelectorAll('.option');
@@ -404,17 +489,11 @@ function selectOption(e){
     option.classList.add('--is-active');
 }
 
-// Swatches
-const swatches = document.querySelectorAll('.tray__swatch');
-
-for(const swatch of swatches){
-    swatch.addEventListener('click', selectSwatch);
-}
-
 function selectSwatch(e) {
-    let color = COLORS[parseInt(e.target.dataset.key)];
-    let new_mtl;
     let option = e.target;
+    let color = parseInt('0x' + option.getAttribute('hex'));
+    let new_mtl = WALLMAT;
+    new_mtl.color = new THREE.Color(color);
 
     for(const otherSwatch of swatches){
         otherSwatch.classList.remove('--is-active');
@@ -423,11 +502,6 @@ function selectSwatch(e) {
 
     option.classList.add('--is-active');
     option.innerHTML = '<i class="fa fa-check"></i>';
-
-    new_mtl = new THREE.MeshPhongMaterial({
-        color: parseInt('0x' + color.color),
-        shininess: color.shininess ? color.shininess : 10
-    });
 
     setMaterial(theModel, activeOption, new_mtl);
 }

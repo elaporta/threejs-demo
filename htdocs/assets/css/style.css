@@ -170,6 +170,13 @@ canvas {
     margin-top: 0;
 }
 
+.tray-container {
+    margin: auto;
+    max-height: 300px;
+    overflow-y: auto;
+    height: 100%;
+}
+
 .tray {
     width: 150px;
     margin: auto;
@@ -416,6 +423,11 @@ canvas {
 
 .share-btn {
     cursor: pointer;
+}
+
+.share-btn i {
+    margin: 5px;
+    font-size: 20px;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
