@@ -172,7 +172,7 @@ canvas {
 
 .tray-container {
     margin: auto;
-    max-height: 300px;
+    max-height: 200px;
     overflow-y: auto;
     height: 100%;
 }

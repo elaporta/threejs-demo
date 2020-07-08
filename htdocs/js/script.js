@@ -546,32 +546,55 @@ function sidebarClick() {
 
 document.getElementById('sidebar-open-btn').addEventListener('click', sidebarClick);
 
-// Screenshot function
-const saveFile = function (strData, filename){
-    let link = document.createElement('a');
-    if(typeof link.download === 'string'){
-        document.body.appendChild(link); //Firefox requires the link to be in the body
-        link.download = filename;
-        link.href = strData;
-        link.click();
-        document.body.removeChild(link); //remove the link when done
-    }
-    else{
-        location.replace(uri);
-    }
-}
-function screenShot(){
-    let imgData, imgNode;
-    let strDownloadMime = 'image/octet-stream';
+// Make image from renderer
+function rendererToImage(){
+    let imgData;
 
     try{
         let strMime = 'image/jpeg';
         imgData = renderer.domElement.toDataURL(strMime);
-        saveFile(imgData.replace(strMime, strDownloadMime), 'test.jpg');
+        imgData = imgData.replace(strMime, 'image/octet-stream');
     }
     catch(e){
         console.log(e);
-        return;
+    }
+    finally{
+        return imgData;
     }
 }
+
+// Screenshot function
+function screenShot(){
+    let strData = rendererToImage();
+    let filename = new Date().toLocaleString() + '.jpg';
+
+    if(strData){
+        let link = document.createElement('a');
+        if(typeof link.download === 'string'){
+            document.body.appendChild(link); //Firefox requires the link to be in the body
+            link.download = filename;
+            link.href = strData;
+            link.click();
+            document.body.removeChild(link); //remove the link when done
+        }
+        else{
+            location.replace(uri);
+        }
+    }
+
+    return false;
+}
 document.getElementById('screenshotbtn').addEventListener('click', screenShot);
+
+// Facebook function
+function facebookShare(){
+    let imgLink = rendererToImage();
+
+    if(imgLink){
+        console.log(imgLink);
+        // window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(imgLink)+'&t='+encodeURIComponent(imgLink),'sharer','toolbar=0,status=0,width=626,height=436');
+    }
+
+    return false;
+}
+document.getElementById('facebookbtn').addEventListener('click', facebookShare);
