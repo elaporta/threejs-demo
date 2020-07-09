@@ -18,8 +18,10 @@ import { ntc } from './colors/ntc.js';
 const LOADER = document.getElementById('js-loader');
 const TRAY = document.getElementById('js-tray-slide');
 const DRAG_NOTICE = document.getElementById('js-drag-notice');
-
 const CONTAINER = document.getElementById('model-container');
+const SELECTEDCOLOR = document.getElementById('selected-color');
+
+// Render const
 const WIDTH = CONTAINER.offsetWidth;
 const HEIGHT = CONTAINER.offsetHeight;
 const BACKGROUND_COLOR = 0xf1f1f1;
@@ -421,12 +423,9 @@ function sumRGBColor(r, g, b) {
 //         return sumRGBColor(c1.r, c1.g, c1.b) > sumRGBColor(c2.r, c2.g, c2.b);
 //     });
 
-//     let id = 1;
 //     for(let i in colors){
 //         let cat = ntc.name(colors[i].hex);
 //         colors[i].category = cat[3];
-//         colors[i].id = id;
-//         id++;
 //         console.log(JSON.stringify(colors[i]));
 //     }
 // }
@@ -491,9 +490,13 @@ function selectOption(e){
 
 function selectSwatch(e) {
     let option = e.target;
-    let color = parseInt('0x' + option.getAttribute('hex'));
+    let hex = option.getAttribute('hex');
+    let color = parseInt('0x' + hex);
     let new_mtl = WALLMAT;
     new_mtl.color = new THREE.Color(color);
+
+    // Display hex in selected color
+    SELECTEDCOLOR.innerHTML = '#' + hex;
 
     for(const otherSwatch of swatches){
         otherSwatch.classList.remove('--is-active');
