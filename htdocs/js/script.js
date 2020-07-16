@@ -1,18 +1,16 @@
 // Dependencies
 import * as THREE from './three.js/build/three.module.js';
 import { WEBGL } from './three.js/examples/jsm/loaders/WEBGL.js';
-import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
 import { Reflector } from './three.js/examples/jsm/objects/Reflector.js';
-
+import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 // import { TDSLoader } from './three.js/examples/jsm/loaders/TDSLoader.js';
-// import { MTLLoader } from './three.js/examples/jsm/loaders/MTLLoader.js';
-// import { OBJLoader } from './three.js/examples/jsm/loaders/OBJLoader.js';
-// import { TGALoader } from './three.js/examples/jsm/loaders/TGALoader.js';
 
 import { COLORS } from './colors/colorsSorted.js';
 import { KellyColorPicker } from './colors/html5kellycolorpicker.min.js';
 import { ntc } from './colors/ntc.js';
+
+import { MATERIALS } from './materials.js';
 
 // Dom elements
 const LOADER = document.getElementById('js-loader');
@@ -25,7 +23,6 @@ const SELECTEDCOLOR = document.getElementById('selected-color');
 const WIDTH = CONTAINER.offsetWidth;
 const HEIGHT = CONTAINER.offsetHeight;
 const BACKGROUND_COLOR = 0xf1f1f1;
-const INITIAL_MTL = new THREE.MeshPhongMaterial({ color: 0xF2DABA, shininess: 10 });
 
 // Private variables
 let theModel;
@@ -90,79 +87,129 @@ controls.dampingFactor = 0.25;
 // controls.minDistance = 30;
 // controls.maxDistance = 190;
 
-// Add hemisphere light to scene
-// let hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x080820, 0.61);
-// hemisphereLight.position.set(0, 50, 0);
-// scene.add(hemisphereLight);
-
 // Add ambient light
 let ambientLight = new THREE.AmbientLight(0x404040); // soft white light
 scene.add(ambientLight);
 
-// Add directional light to scene
-let directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
-directionalLight.position.set(-8.4, -.5, 1);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize = new THREE.Vector2(2048, 2048);
-scene.add(directionalLight);
+// Add hemisphere light A to scene
+// let hemisphereLightA = new THREE.HemisphereLight(0xffffff, 0x080820, 0.61);
+// hemisphereLightA.position.set(-7.5, .2, 1.22);
+// scene.add(hemisphereLightA);
 
-// Directional light helper
-let directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 5);
-// scene.add(directionalLightHelper);
+// Hemisphere light Helper
+// var hemisphereLightAHelper = new THREE.HemisphereLightHelper(hemisphereLightA, 5);
+// scene.add(hemisphereLightAHelper);
 
-// Add point light to scene
-let pointLight = new THREE.PointLight(0xffffff, 1.2, 10);
-pointLight.position.set(-2.5, -0.1, -1.5);
-scene.add(pointLight);
+// Add hemisphere light B to scene
+// let hemisphereLightB = new THREE.HemisphereLight(0xffffff, 0x080820, 0.2);
+// hemisphereLightB.position.set(-.29, .06, 3.6);
+// scene.add(hemisphereLightB);
+// var hemisphereLightBHelper = new THREE.HemisphereLightHelper(hemisphereLightB, 5);
+// scene.add(hemisphereLightBHelper);
 
-// Point light helper
-let pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
-// scene.add(pointLightHelper);
+// Add directional light A to scene
+// let directionalLightA = new THREE.DirectionalLight(0xffffff, .15);
+// directionalLightA.position.set(-.29, .06, 3.6);
+// directionalLightA.target.position.set(-.29, -1.1, -0.1);
+// directionalLightA.castShadow = true;
+// directionalLightA.shadow.mapSize = new THREE.Vector2(2048, 2048);
+// scene.add(directionalLightA);
+// scene.add(directionalLightA.target);
+// let directionalLightAHelper = new THREE.DirectionalLightHelper(directionalLightA, 2);
+// scene.add(directionalLightAHelper);
 
-// Texture Loader
-let textureLoader = new THREE.TextureLoader();
-let map, normalMap, roughnessMap;
+// Add directional light B to scene
+// let directionalLightB = new THREE.DirectionalLight(0xffffff, 1);
+// directionalLightB.position.set(-7.5, .2, 1.22);
+// directionalLightB.target.position.set(2.59, -1.5, -4.28);
+// directionalLightB.castShadow = true;
+// directionalLightB.shadow.mapSize = new THREE.Vector2(1024, 1024);
+// scene.add(directionalLightB);
+// scene.add(directionalLightB.target);
 
-// Walls textures
-map = textureLoader.load('../assets/textures/T01_PAREDES/T01.jpg');
-map.wrapS = THREE.RepeatWrapping;
-map.wrapT = THREE.RepeatWrapping;
-normalMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_NRM.jpg');
-roughnessMap = textureLoader.load('../assets/textures/T01_PAREDES/T01_ROUGH.jpg');
-const WALLMAT = new THREE.MeshStandardMaterial({
-    map: map,
-    normalMap: normalMap,
-    roughnessMap: roughnessMap
-});
+// Directional light B helper
+// let directionalLightBHelper = new THREE.DirectionalLightHelper(directionalLightB, 2, 0xf9ff82);
+// scene.add(directionalLightBHelper);
 
-// Floor Textures
-map = textureLoader.load('../assets/textures/T02_PISO/T02.jpg');
-map.wrapS = THREE.RepeatWrapping;
-map.wrapT = THREE.RepeatWrapping;
-normalMap = textureLoader.load('../assets/textures/T02_PISO/T02_NRM.jpg');
-roughnessMap = textureLoader.load('../assets/textures/T02_PISO/T02_ROUGH.jpg');
-const FLOORMAT = new THREE.MeshStandardMaterial({
-    map: map,
-    normalMap: normalMap,
-    roughnessMap: roughnessMap,
-    transparent: true,
-    opacity: .8
-});
+// Add point light A to scene
+let pointLightA = new THREE.PointLight(0xffffff, .8, 4.5);
+pointLightA.position.set(-2.69, -.2, -.19);
+scene.add(pointLightA);
+// let pointLightAHelper = new THREE.PointLightHelper(pointLightA, 1);
+// scene.add(pointLightAHelper);
 
-// Ceiling Textures
-map = textureLoader.load('../assets/textures/T03_TECHO/T03.jpg');
-map.wrapS = THREE.RepeatWrapping;
-map.wrapT = THREE.RepeatWrapping;
-normalMap = textureLoader.load('../assets/textures/T03_TECHO/T03_NRM.jpg');
-roughnessMap = textureLoader.load('../assets/textures/T03_TECHO/T03_ROUGH.jpg');
-const CEILINGMAT = new THREE.MeshStandardMaterial({
-    map: map,
-    normalMap: normalMap,
-    roughnessMap: roughnessMap
-});
+// Add point light B to scene
+let pointLightB = new THREE.PointLight(0xffffff, .8, 6);
+pointLightB.position.set(0.11, -.1, -1.09);
+scene.add(pointLightB);
+// let pointLightBHelper = new THREE.PointLightHelper(pointLightB, 1);
+// scene.add(pointLightBHelper);
+
+// Add point light C to scene
+let pointLightC = new THREE.PointLight(0xffffff, .8, 6);
+pointLightC.position.set(-2.7, .2, -2.9);
+scene.add(pointLightC);
+// let pointLightCHelper = new THREE.PointLightHelper(pointLightC, 1);
+// scene.add(pointLightCHelper);
+
+// Add point light D to scene
+let pointLightD = new THREE.PointLight(0xffffff, .8, 4);
+pointLightD.position.set(-2.9, 0.19, 4.16);
+scene.add(pointLightD);
+// let pointLightDHelper = new THREE.PointLightHelper(pointLightD, 1);
+// scene.add(pointLightDHelper);
+
+// Add point light E to scene
+let pointLightE = new THREE.PointLight(0xffffff, 1, 2);
+pointLightE.position.set(.8, .19, -2.1);
+scene.add(pointLightE);
+// let pointLightEHelper = new THREE.PointLightHelper(pointLightE, 1);
+// scene.add(pointLightEHelper);
+
+// Add point light F to scene
+let pointLightF = new THREE.PointLight(0xffffff, .75, 2);
+pointLightF.position.set(-2.59, -.2, 0.69);
+scene.add(pointLightF);
+// let pointLightFHelper = new THREE.PointLightHelper(pointLightF, 1);
+// scene.add(pointLightFHelper);
+
+// Add point light G to scene
+let pointLightG = new THREE.PointLight(0xffffff, .4, 4);
+pointLightG.position.set(-6.39, 0.2, -5.1);
+scene.add(pointLightG);
+// let pointLightGHelper = new THREE.PointLightHelper(pointLightG, 1);
+// scene.add(pointLightGHelper);
+
+// Add point light H to scene
+let pointLightH = new THREE.PointLight(0xffffff, .5, 10);
+pointLightH.position.set(0.8, -0.2, 3.5);
+scene.add(pointLightH);
+// let pointLightHHelper = new THREE.PointLightHelper(pointLightH, 1);
+// scene.add(pointLightHHelper);
+
+// Add point light I to scene
+let pointLightI = new THREE.PointLight(0xffffff, .75, .75);
+pointLightI.position.set(1.9, -.99, -3.409);
+scene.add(pointLightI);
+// let pointLightIHelper = new THREE.PointLightHelper(pointLightI, 1);
+// scene.add(pointLightIHelper);
+
+// Add point light J to scene
+let pointLightJ = new THREE.PointLight(0xffffff, .75, 4);
+pointLightJ.position.set(-1.4, -.99, .191);
+scene.add(pointLightJ);
+// let pointLightJHelper = new THREE.PointLightHelper(pointLightJ, 1);
+// scene.add(pointLightJHelper);
+
+// Add point light K to scene
+let pointLightK = new THREE.PointLight(0xffffff, .8, 4);
+pointLightK.position.set(-2.48, -.2, -1.18);
+scene.add(pointLightK);
+// let pointLightKHelper = new THREE.PointLightHelper(pointLightK, 1);
+// scene.add(pointLightKHelper);
 
 // Load ground mirror
-let groundGeometry = new THREE.PlaneBufferGeometry(10, 10);
+let groundGeometry = new THREE.PlaneBufferGeometry(9, 9);
 let groundMirror = new Reflector(groundGeometry, {
     clipBias: 0.003,
     textureWidth: WIDTH * window.devicePixelRatio,
@@ -173,36 +220,36 @@ groundMirror.rotateX(- Math.PI / 2);
 groundMirror.position.y = -1.62;
 scene.add(groundMirror);
 
-// function setObjectNameId(name = null){
-//     let nameId = null;
+function setObjectNameId(name = null){
+    let nameId = null;
 
-//     if(typeof name == 'string'){
-//         if(name == 'Color_G01'){
-//             nameId = 'wall-1';
-//         }
-//         else if(name == 'Color_G02'){
-//             nameId = 'wall-2';
-//         }
-//         else if(name == 'Color_G03'){
-//             nameId = 'wall-3';
-//         }
-//     }
+    if(typeof name == 'string'){
+        if(name.includes('_W_')){
+            nameId = 'wall-w';
+        }
+        else if(name.includes('_N_')){
+            nameId = 'wall-n';
+        }
+        else if(name.includes('_E_')){
+            nameId = 'wall-e';
+        }
+    }
 
-//     return nameId;
-// }
+    return nameId;
+}
 
 // Loader manager
 let loadergManager = new THREE.LoadingManager(function(){
     if(theModel){
         // Set the models initial variables
         theModel.scale.set(1, 1, 1);
-        // theModel.position.set(-1.5, -1.5, 0);
         theModel.position.set(-4.2, -1.8, 4.2);
-        // theModel.rotation.x = 300; // 3ds fix position
         theModel.castShadow = true;
         theModel.receiveShadow = true;
 
         theModel.traverse(o => {
+            // console.log(o);
+
             if(o.isMesh){
 
                 // Set shadows
@@ -210,7 +257,7 @@ let loadergManager = new THREE.LoadingManager(function(){
                 o.receiveShadow = true;
 
                 // Find walls
-                // if(Array.isArray(o.material)){console.log('aaaa');
+                // if(Array.isArray(o.material)){
                 //     for(let mat of o.material){
                 //         // Set a new property to identify this object
                 //         o.nameId = setObjectNameId(mat.name);
@@ -218,25 +265,127 @@ let loadergManager = new THREE.LoadingManager(function(){
                 // }
                 // else{}
 
-                if(o.material.name == 'T01 - PAREDES'){
-                    o.material = WALLMAT;
-                    o.nameId = 'wall-1';
+                if(o.name.includes('T01')){
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                    o.material = MATERIALS.T01;
+                    o.nameId = setObjectNameId(o.name);
                 }
 
-                if(o.material.name == 'T02 - PISO'){
-                    o.material = FLOORMAT;
+                if(o.name.includes('T02')){
+                    o.castShadow = false;
+                    o.material = MATERIALS.T02;
                 }
 
-                if(o.material.name == 'T03 - TECHO'){
-                    o.material = CEILINGMAT;
+                if(o.name.includes('T03')){
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                    o.material = MATERIALS.T03;
                 }
 
-                // Set a new property to identify this object
-                // o.nameId = setObjectNameId(o.material.name);
+                if(o.name.includes('T05')){
+                    // o.material = MATERIALS.T05;
+                }
 
-                // if(o.nameId != null){
-                //     o.material = INITIAL_MTL;
-                // }
+                if(o.name.includes('T06')){
+                    // o.material = MATERIALS.T06;
+                }
+
+                if(o.name.includes('T07')){
+                    o.material = MATERIALS.T07;
+                }
+
+                if(o.name.includes('T08')){
+                    o.material = MATERIALS.T08;
+                    // o.visible = false;
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                }
+
+                if(o.name.includes('T09')){
+                    o.material = MATERIALS.T09;
+                    // o.visible = false;
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                }
+
+                if(o.name == 'Ventana_2_(Agua_1)'){
+                    o.visible = false;
+                }
+
+                if(o.name.includes('T10')){
+                    o.material = MATERIALS.T10;
+                }
+
+                if(o.name.includes('T11')){
+                    o.material = MATERIALS.T11;
+                }
+
+                if(o.name.includes('T12')){
+                    // o.material = MATERIALS.T12;
+                }
+
+                if(o.name.includes('T13')){
+                    o.material = MATERIALS.T13;
+                }
+
+                if(o.name.includes('T14')){
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                    // o.material = MATERIALS.T14;
+                }
+
+                if(o.name.includes('T15')){
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                    // o.material = MATERIALS.T15;
+                }
+
+                if(o.name.includes('T16')){
+                    o.castShadow = false;
+                    o.receiveShadow = false;
+                    // o.material = MATERIALS.T16;
+                }
+
+                if(o.name.includes('T17')){
+                    o.material = MATERIALS.T17;
+                }
+
+                if(o.name.includes('T18')){
+                    o.material = MATERIALS.T18;
+                }
+
+                if(o.name.includes('T20')){
+                    // o.material = MATERIALS.T20;
+                }
+
+                if(o.name.includes('T21')){
+                    // o.material = MATERIALS.T21;
+                }
+
+                if(o.name.includes('T22')){
+                    // o.material = MATERIALS.T22;
+                }
+
+                if(o.name.includes('T23')){
+                    // o.material = MATERIALS.T23;
+                }
+            }
+            else{
+                // Zocalo fix
+                if(o.name.includes('T01') && o.children.length > 0){
+                    for(let child of o.children){
+                        child.nameId = 'wall-w';
+                        child.castShadow = false;
+                    }
+                }
+
+                // Techo shadow fix
+                if(o.name.includes('T03') && o.children.length > 0){
+                    for(let child of o.children){
+                        child.castShadow = false;
+                    }
+                }
             }
         });
 
@@ -255,46 +404,40 @@ loader.load('living.gltf', function(gltf){
     theModel = gltf.scene.children[0];
 });
 
-// Load tga
-// let loaderTga = new TGALoader();
-// let textureMadera = loaderTga.load( '../assets/models/living/textures/Madera_1_AO.tga' );
-// let materialMadera = new THREE.MeshPhongMaterial( { color: 0x946F43, map: textureMadera } );
-
 // Load 3ds
 // let loader = new TDSLoader(loadergManager);
 // loader.setResourcePath('../assets/models/living/');
 // loader.load('../assets/models/living/living.3ds', function(object){
+//     object.rotation.x = 300; // 3ds fix position
 //     theModel = object;
-// });
-
-// Load obj / mtl
-// let loader = new MTLLoader(loadergManager);
-// loader.setPath('../assets/models/living/');
-// loader.load('living.mtl', function(materials){
-//     materials.preload();
-
-//     new OBJLoader(loadergManager)
-//         .setMaterials(materials)
-//         .setPath('../assets/models/living/')
-//         .load('living.obj', function(object){
-//             theModel = object;
-//         });
 // });
 
 // Debug info
 function debugInfo(){
-    if(theModel){
-        console.log('Model Position: ', theModel.position);
-        console.log('Model Rotation: ', theModel.rotation);
-    }
+    // if(theModel){
+    //     console.log('Model Position: ', theModel.position);
+    //     console.log('Model Rotation: ', theModel.rotation);
+    // }
 
-    console.log('Camera Position: ', camera.position);
-    console.log('Camera Rotation: ', camera.rotation);
+    // console.log('Camera Position: ', camera.position);
+    // console.log('Camera Rotation: ', camera.rotation);
 
-    console.log('Point Light Position: ', pointLight.position);
-    console.log('Directional Light Position: ', directionalLight.position);
+    console.log('Point Light A Position: ', pointLightA.position);
+    console.log('Point Light B Position: ', pointLightB.position);
+    console.log('Point Light C Position: ', pointLightC.position);
+    console.log('Point Light D Position: ', pointLightD.position);
+    console.log('Point Light E Position: ', pointLightE.position);
+    console.log('Point Light F Position: ', pointLightF.position);
+    console.log('Point Light G Position: ', pointLightG.position);
+    console.log('Point Light H Position: ', pointLightH.position);
+    console.log('Point Light I Position: ', pointLightI.position);
+    console.log('Point Light J Position: ', pointLightJ.position);
+    console.log('Point Light K Position: ', pointLightK.position);
 
-    console.log('Ground Mirror Position: ', groundMirror.position);
+    // console.log('Directional Light A Position: ', directionalLightA.position);
+    // console.log('Directional Light B Position: ', directionalLightB.position);
+
+    // console.log('Ground Mirror Position: ', groundMirror.position);
 }
 
 // Key controls movement
@@ -314,34 +457,35 @@ document.onkeydown = function(e){
         break;
 
         // debug info
-        case 73: // s
+        case 73: // i
             debugInfo();
         break;
 
         // the model position for up/down
         case 65: // a
-            pointLight.position.x += 0.1;
+            pointLightK.position.x += 0.1;
         break;
         case 68: // d
-            pointLight.position.x -= 0.1;
+            pointLightK.position.x -= 0.1;
         break;
         case 69: // e
-            pointLight.position.z += 0.1;
+            pointLightK.position.z += 0.1;
         break;
         case 81: // q
-            pointLight.position.z -= 0.1;
+            pointLightK.position.z -= 0.1;
         break;
         case 83: // s
-            pointLight.position.y += 0.1;
+            pointLightK.position.y += 0.1;
         break;
         case 87: // w
-            pointLight.position.y -= 0.1;
+            pointLightK.position.y -= 0.1;
         break;
     }
 };
 
 
 function animate() {
+    // directionalLightAHelper.update();
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
@@ -479,21 +623,26 @@ for (const option of options){
 
 function selectOption(e){
     let option = e.target;
-    activeOption = e.target.dataset.option;
 
-    for(const otherOption of options){
-        otherOption.classList.remove('--is-active');
+    if(e.target.dataset.option){
+        activeOption = e.target.dataset.option;
+
+        for(const otherOption of options){
+            otherOption.classList.remove('--is-active');
+        }
+
+        option.classList.add('--is-active');
     }
-
-    option.classList.add('--is-active');
 }
 
 function selectSwatch(e) {
     let option = e.target;
     let hex = option.getAttribute('hex');
     let color = parseInt('0x' + hex);
-    let new_mtl = WALLMAT;
+    let new_mtl = MATERIALS.T01.clone();
     new_mtl.color = new THREE.Color(color);
+    new_mtl.shininess = 4;
+    new_mtl.opacity = .7;
 
     // Display hex in selected color
     SELECTEDCOLOR.innerHTML = '#' + hex;
