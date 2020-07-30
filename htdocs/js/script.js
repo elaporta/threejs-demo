@@ -1,6 +1,6 @@
 // Dependencies
 import * as THREE from './three.js/build/three.module.js';
-import { WEBGL } from './three.js/examples/jsm/loaders/WEBGL.js';
+import { WEBGL } from './three.js/examples/jsm/loaders/WebGL.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
 import { Reflector } from './three.js/examples/jsm/objects/Reflector.js';
@@ -10,6 +10,8 @@ import { KellyColorPicker } from './colors/html5kellycolorpicker.min.js';
 import { ntc } from './colors/ntc.js';
 
 import { MATERIALS } from './materials.js';
+import { LIGHTS, HELPERS } from './lights.js';
+// import { LIGHTS } from './lights.old.js';
 
 // Dom elements
 const LOADER = document.getElementById('js-loader');
@@ -60,89 +62,31 @@ window.addEventListener('resize', resize, false);
 // Add controls
 let controls = new OrbitControls(camera, renderer.domElement);
 
-// Old controls
-// controls.enableDamping = true;
-// controls.enablePan = false;
-// controls.dampingFactor = 0.1;
-// controls.autoRotate = false; // Toggle this if you'd like the chair to automatically rotate
-// controls.autoRotateSpeed = 0.2; // 30
-
-// New controls
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
-controls.enableZoom = true;
+// controls.enableZoom = false;    // true
 
 // Limit Y rotation
-controls.maxPolarAngle = 1.7382304385754106;
-controls.minPolarAngle = 1.253552748871017;
+// controls.maxPolarAngle = 1.7382304385754106;
+// controls.minPolarAngle = 1.253552748871017;
 
 // Limit X rotation
-controls.maxAzimuthAngle = 0.547924223149144;
-controls.minAzimuthAngle = -0.7308629085677654;
+// controls.maxAzimuthAngle = 0.547924223149144;
+// controls.minAzimuthAngle = -0.7308629085677654;
 
 // Limit distance
-controls.minDistance = 0;
-controls.maxDistance = 5.9;
+// controls.minDistance = 0;
+// controls.maxDistance = 5.9;
 
-// Add ambient light
-let ambientLight = new THREE.AmbientLight(0x615d54, .7); // 0x404040 soft white light
-scene.add(ambientLight);
+// Add lights to scene
+for(let i in LIGHTS){
+    scene.add(LIGHTS[i]);
+}
 
-
-// Add point light A to scene
-let pointLightA = new THREE.PointLight(0xffffff, .8, 4.5);
-pointLightA.position.set(-2.69, -.2, -.19);
-scene.add(pointLightA);
-
-// Add point light B to scene
-let pointLightB = new THREE.PointLight(0xffffff, .8, 6);
-pointLightB.position.set(0.11, -.1, -1.09);
-scene.add(pointLightB);
-
-// Add point light C to scene
-let pointLightC = new THREE.PointLight(0xffffff, .8, 6);
-pointLightC.position.set(-2.7, .2, -2.9);
-scene.add(pointLightC);
-
-// Add point light D to scene
-let pointLightD = new THREE.PointLight(0xffffff, .8, 4);
-pointLightD.position.set(-2.9, 0.19, 4.16);
-scene.add(pointLightD);
-
-// Add point light E to scene
-let pointLightE = new THREE.PointLight(0xffffff, 1, 2);
-pointLightE.position.set(.8, .19, -2.1);
-scene.add(pointLightE);
-
-// Add point light F to scene
-let pointLightF = new THREE.PointLight(0xffffff, .75, 2);
-pointLightF.position.set(-2.59, -.2, 0.69);
-scene.add(pointLightF);
-
-// Add point light G to scene
-let pointLightG = new THREE.PointLight(0xffffff, .4, 4);
-pointLightG.position.set(-6.39, 0.2, -5.1);
-scene.add(pointLightG);
-
-// Add point light H to scene
-let pointLightH = new THREE.PointLight(0xffffff, .5, 10);
-pointLightH.position.set(0.8, -0.2, 3.5);
-scene.add(pointLightH);
-
-// Add point light I to scene
-let pointLightI = new THREE.PointLight(0xffffff, .75, .75);
-pointLightI.position.set(1.9, -.99, -3.409);
-scene.add(pointLightI);
-
-// Add point light J to scene
-let pointLightJ = new THREE.PointLight(0xffffff, .75, 4);
-pointLightJ.position.set(-1.4, -.99, .191);
-scene.add(pointLightJ);
-
-// Add point light K to scene
-let pointLightK = new THREE.PointLight(0xffffff, .8, 4);
-pointLightK.position.set(-2.48, -.2, -1.18);
-scene.add(pointLightK);
+// Add lights helpers to scene
+// for(let i in LIGHTS){
+//     scene.add(HELPERS[i]);
+// }
 
 // Load ground mirror
 let groundGeometry = new THREE.PlaneBufferGeometry(9, 9);
@@ -214,7 +158,7 @@ let loadergManager = new THREE.LoadingManager(function(){
                 }
 
                 if(o.name.includes('T08')){
-                    o.material = MATERIALS.T08;
+                    // o.material = MATERIALS.T08;
                     o.castShadow = false;
                     o.receiveShadow = false;
                 }
@@ -291,7 +235,7 @@ let loadergManager = new THREE.LoadingManager(function(){
 
 // Load gltf
 let loader = new GLTFLoader(loadergManager);
-loader.setPath('../assets/models/living/');
+loader.setPath('assets/models/living/');
 loader.load('living.gltf', function(gltf){
     scene.add(gltf.scene);
     theModel = gltf.scene.children[0];
@@ -416,7 +360,7 @@ function getMatchedColors(pickedRgb, pickedHex){
 // Select Option
 const options = document.querySelectorAll('.option');
 
-for (const option of options){
+for(const option of options){
     option.addEventListener('click', selectOption);
 }
 
@@ -485,16 +429,18 @@ function sidebarClick() {
     const openIcon = document.getElementById('sidebar-open-icon');
 
     if(sidebarOpen){
-        openBtn.style.right = '0';
+        // openBtn.style.right = '0';   // I CHANGE IT
         openIcon.className = 'fa fa-angle-left'; // <
-        sidebar.style.width = '0';
-        sidebar.style.padding = '0';
+        // sidebar.style.width = '0';   // I CHANGE IT
+        sidebar.style.width = '93px';   // I CHANGE IT
+        // sidebar.style.padding = '0';   // I CHANGE IT
     }
     else{
-        openBtn.style.right = '250px';
+        // openBtn.style.right = '250px';   // I CHANGE IT
         openIcon.className = 'fa fa-angle-left open'; // >
-        sidebar.style.width = '260px';
-        sidebar.style.padding = '1.5rem';
+        // sidebar.style.width = '260px';   // I CHANGE IT
+        sidebar.style.width = '323px';      // I CHANGE IT
+        sidebar.style.padding = '1.5rem';   // I CHANGE IT
     }
 
     sidebarOpen = !sidebarOpen;
@@ -541,3 +487,51 @@ function screenShot(){
     return false;
 }
 document.getElementById('screenshotbtn').addEventListener('click', screenShot);
+
+// Debug info
+function debugInfo(){
+    console.log('Position: ', LIGHTS.pointLightD.position);
+}
+
+// Key controls movement
+document.onkeydown = function(e){
+    switch(e.keyCode){
+        case 37: // left
+            camera.rotation.x += 0.1;
+        break;
+        case 38: // up
+            camera.rotation.z -= 0.1;
+        break;
+        case 39: // right
+            camera.rotation.x -= 0.1;
+        break;
+        case 40: // down
+            camera.rotation.z += 0.1;
+        break;
+
+        // debug info
+        case 73: // i
+            debugInfo();
+        break;
+
+        // the model position for up/down
+        case 65: // a
+            LIGHTS.pointLightD.position.x -= 0.1;
+        break;
+        case 68: // d
+            LIGHTS.pointLightD.position.x += 0.1;
+        break;
+        case 69: // e
+            LIGHTS.pointLightD.position.z -= 0.1;
+        break;
+        case 81: // q
+            LIGHTS.pointLightD.position.z += 0.1;
+        break;
+        case 83: // s
+            LIGHTS.pointLightD.position.y -= 0.1;
+        break;
+        case 87: // w
+            LIGHTS.pointLightD.position.y += 0.1;
+        break;
+    }
+};
