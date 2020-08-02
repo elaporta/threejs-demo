@@ -2,6 +2,7 @@
 import * as THREE from './three.js/build/three.module.js';
 import { WEBGL } from './three.js/examples/jsm/loaders/WebGL.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
+import { RGBELoader } from './three.js/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
 import { Reflector } from './three.js/examples/jsm/objects/Reflector.js';
 
@@ -10,10 +11,9 @@ import { KellyColorPicker } from './colors/html5kellycolorpicker.min.js';
 import { ntc } from './colors/ntc.js';
 
 import { MATERIALS } from './materials.js';
-import { LIGHTS, HELPERS } from './lights.js';
-// import { LIGHTS } from './lights.old.js';
+import { LIGHTS, TARGETS, HELPERS } from './lights.js';
 
-// Dom elements
+// DOM elements
 const LOADER = document.getElementById('js-loader');
 const TRAY = document.getElementById('js-tray-slide');
 const DRAG_NOTICE = document.getElementById('js-drag-notice');
@@ -37,13 +37,14 @@ colors = COLORS;
 
 // Init the scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(BACKGROUND_COLOR);
 
 // Init the renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setSize(WIDTH, HEIGHT);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
+// renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// renderer.toneMappingExposure = 1;
 CONTAINER.appendChild(renderer.domElement);
 
 // Add a camera
@@ -66,27 +67,59 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 // controls.enableZoom = false;    // true
 
-// Limit Y rotation
+// // Limit Y rotation
 // controls.maxPolarAngle = 1.7382304385754106;
 // controls.minPolarAngle = 1.253552748871017;
 
-// Limit X rotation
+// // Limit X rotation
 // controls.maxAzimuthAngle = 0.547924223149144;
 // controls.minAzimuthAngle = -0.7308629085677654;
 
-// Limit distance
+// // Limit distance
 // controls.minDistance = 0;
 // controls.maxDistance = 5.9;
+
+// Background
+scene.background = new THREE.Color(BACKGROUND_COLOR);
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+const texture = cubeTextureLoader.load([
+    'assets/img/HDRI_Hero3sky.jpg',
+    'assets/img/HDRI_Hero3sky.jpg',
+    'assets/img/HDRI_Hero3sky.jpg',
+    'assets/img/HDRI_Hero3sky.jpg',
+    'assets/img/HDRI_Hero3sky.jpg',
+    'assets/img/HDRI_Hero3sky.jpg'
+]);
+scene.background = texture;
+
+// // Add HDR background
+// let pmremGenerator = new THREE.PMREMGenerator(renderer);
+// pmremGenerator.compileEquirectangularShader();
+// let rgbeLoader = new RGBELoader()
+// .setDataType(THREE.UnsignedByteType)
+// .setPath('assets/textures/hdr/')
+// .load('background_1k.hdr', function(texture){
+//     let envMap = pmremGenerator.fromEquirectangular(texture).texture;
+//     scene.background = envMap;
+//     scene.environment = envMap;
+//     texture.dispose();
+//     pmremGenerator.dispose();
+// });
 
 // Add lights to scene
 for(let i in LIGHTS){
     scene.add(LIGHTS[i]);
 }
 
+// Add lights targets to scene
+for(let i in TARGETS){
+    scene.add(TARGETS[i]);
+}
+
 // Add lights helpers to scene
-// for(let i in LIGHTS){
-//     scene.add(HELPERS[i]);
-// }
+for(let i in HELPERS){
+    scene.add(HELPERS[i]);
+}
 
 // Load ground mirror
 let groundGeometry = new THREE.PlaneBufferGeometry(9, 9);
@@ -134,6 +167,7 @@ let loadergManager = new THREE.LoadingManager(function(){
                 // Set shadows
                 o.castShadow = true;
                 o.receiveShadow = true;
+                // o.toneMapped = false;
 
                 if(o.name.includes('T01')){
                     o.castShadow = false;
@@ -242,7 +276,6 @@ loader.load('living.gltf', function(gltf){
 });
 
 function animate() {
-    // directionalLightAHelper.update();
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
@@ -378,6 +411,8 @@ function selectOption(e){
     }
 }
 
+let lastHex;
+
 function selectSwatch(e) {
     let option = e.target;
     let hex = option.getAttribute('hex');
@@ -392,16 +427,20 @@ function selectSwatch(e) {
     new_mtl.shininess = 4;
     new_mtl.opacity = .7;
 
-    // Display hex in selected color
-    SELECTEDCOLOR.innerHTML = '#' + hex;
+    if(hex != lastHex){
+        lastHex = hex;
 
-    for(const otherSwatch of swatches){
-        otherSwatch.classList.remove('--is-active');
-        otherSwatch.innerHTML = '';
+        // Display hex in selected color
+        SELECTEDCOLOR.innerHTML = '#' + hex;
+
+        for(const otherSwatch of swatches){
+            otherSwatch.classList.remove('--is-active');
+            otherSwatch.innerHTML = '';
+        }
+
+        option.classList.add('--is-active');
+        option.innerHTML = '<i class="fa fa-check" hex="'+hex+'"></i>';
     }
-
-    option.classList.add('--is-active');
-    option.innerHTML = '<i class="fa fa-check"></i>';
 
     setMaterial(theModel, activeOption, new_mtl);
 }
@@ -429,18 +468,13 @@ function sidebarClick() {
     const openIcon = document.getElementById('sidebar-open-icon');
 
     if(sidebarOpen){
-        // openBtn.style.right = '0';   // I CHANGE IT
-        openIcon.className = 'fa fa-angle-left'; // <
-        // sidebar.style.width = '0';   // I CHANGE IT
-        sidebar.style.width = '93px';   // I CHANGE IT
-        // sidebar.style.padding = '0';   // I CHANGE IT
+        openIcon.className = 'fa fa-angle-left';
+        sidebar.style.width = '93px';
     }
     else{
-        // openBtn.style.right = '250px';   // I CHANGE IT
-        openIcon.className = 'fa fa-angle-left open'; // >
-        // sidebar.style.width = '260px';   // I CHANGE IT
-        sidebar.style.width = '323px';      // I CHANGE IT
-        sidebar.style.padding = '1.5rem';   // I CHANGE IT
+        openIcon.className = 'fa fa-angle-left open';
+        sidebar.style.width = '323px';
+        sidebar.style.padding = '1.5rem';
     }
 
     sidebarOpen = !sidebarOpen;
@@ -490,7 +524,8 @@ document.getElementById('screenshotbtn').addEventListener('click', screenShot);
 
 // Debug info
 function debugInfo(){
-    console.log('Position: ', LIGHTS.pointLightD.position);
+    // console.log('Position: ', LIGHTS.spotLightA);
+    alert(JSON.stringify(LIGHTS.pointLightA.position));
 }
 
 // Key controls movement
@@ -516,22 +551,22 @@ document.onkeydown = function(e){
 
         // the model position for up/down
         case 65: // a
-            LIGHTS.pointLightD.position.x -= 0.1;
+            LIGHTS.pointLightA.position.x -= 0.1;
         break;
         case 68: // d
-            LIGHTS.pointLightD.position.x += 0.1;
+            LIGHTS.pointLightA.position.x += 0.1;
         break;
         case 69: // e
-            LIGHTS.pointLightD.position.z -= 0.1;
+            LIGHTS.pointLightA.position.z -= 0.1;
         break;
         case 81: // q
-            LIGHTS.pointLightD.position.z += 0.1;
+            LIGHTS.pointLightA.position.z += 0.1;
         break;
         case 83: // s
-            LIGHTS.pointLightD.position.y -= 0.1;
+            LIGHTS.pointLightA.position.y -= 0.1;
         break;
         case 87: // w
-            LIGHTS.pointLightD.position.y += 0.1;
+            LIGHTS.pointLightA.position.y += 0.1;
         break;
     }
 };

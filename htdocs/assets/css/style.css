@@ -129,7 +129,6 @@ canvas {
 .option {
     background-size: cover;
     background-position: 50%;
-    /*background-color: white;    !* I CHANGE IT *!*/
     background-color: rgba(0, 0, 0, 0.5);
     margin-bottom: 3px;
     padding: 10px;
@@ -140,10 +139,27 @@ canvas {
     align-items: center;
     z-index: 2;
     cursor: pointer;
+    background-repeat: no-repeat;
+    background-size: 80% 80%;
+}
+
+#wall-all {
+    background-image: url('../img/icon_all.svg');
+}
+
+#wall-w {
+    background-image: url('../img/icon_w.svg');
+}
+
+#wall-n {
+    background-image: url('../img/icon_n.svg');
+}
+
+#wall-e {
+    background-image: url('../img/icon_e.svg');
 }
 
 .option:hover {
-    /*border-left: 5px solid white;*/
     width: 58px;
     padding-right: 5px;
 }
@@ -151,7 +167,6 @@ canvas {
 .option.--is-active {
     border-right: 3px solid red;
     width: 58px;
-    /*cursor: default;*/
 }
 
 .option.--is-active:hover {
@@ -159,8 +174,6 @@ canvas {
 }
 
 .option>label {
-    /*padding: 1rem;*/
-    /*background-color: rgba(0, 0, 0, 0.2);*/
     color: white;
     z-index: 1;
 }
