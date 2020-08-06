@@ -2,6 +2,7 @@
 import * as THREE from './three.js/build/three.module.js';
 import { WEBGL } from './three.js/examples/jsm/loaders/WebGL.js';
 import { GLTFLoader } from './three.js/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from './three.js/examples/jsm/loaders/DRACOLoader.js';
 import { RGBELoader } from './three.js/examples/jsm/loaders/RGBELoader.js';
 import { OrbitControls } from './three.js/examples/jsm/controls/OrbitControls.js';
 import { Reflector } from './three.js/examples/jsm/objects/Reflector.js';
@@ -80,7 +81,7 @@ controls.dampingFactor = 0.25;
 // controls.maxDistance = 5.9;
 
 // Background
-scene.background = new THREE.Color(BACKGROUND_COLOR);
+// scene.background = new THREE.Color(BACKGROUND_COLOR);
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 const texture = cubeTextureLoader.load([
     'assets/img/HDRI_Hero3sky.jpg',
@@ -267,10 +268,15 @@ let loadergManager = new THREE.LoadingManager(function(){
     }
 });
 
+// Set draco loader
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('js/three.js/examples/js/libs/draco/');
+
 // Load gltf
-let loader = new GLTFLoader(loadergManager);
-loader.setPath('assets/models/living/');
-loader.load('living.gltf', function(gltf){
+const gltfLoader = new GLTFLoader(loadergManager);
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.setPath('assets/models/living/');
+gltfLoader.load('draco.gltf', function(gltf){
     scene.add(gltf.scene);
     theModel = gltf.scene.children[0];
 });
@@ -293,7 +299,7 @@ else{
 
 function start(){
 
-    // Remove the loader
+    // Remove the loading
     LOADER.remove();
     DRAG_NOTICE.classList.add('start');
 

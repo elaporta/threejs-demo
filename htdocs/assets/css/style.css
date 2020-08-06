@@ -406,7 +406,7 @@ canvas {
 }
 
 .fa-angle-left.open{
-  transform: rotate(180deg);
+  transform: rotate(-180deg);
   transition: transform 0.3s linear;
 }
 
