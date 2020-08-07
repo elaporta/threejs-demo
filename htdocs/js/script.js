@@ -82,30 +82,30 @@ controls.dampingFactor = 0.25;
 
 // Background
 // scene.background = new THREE.Color(BACKGROUND_COLOR);
-const cubeTextureLoader = new THREE.CubeTextureLoader();
-const texture = cubeTextureLoader.load([
-    'assets/img/HDRI_Hero3sky.jpg',
-    'assets/img/HDRI_Hero3sky.jpg',
-    'assets/img/HDRI_Hero3sky.jpg',
-    'assets/img/HDRI_Hero3sky.jpg',
-    'assets/img/HDRI_Hero3sky.jpg',
-    'assets/img/HDRI_Hero3sky.jpg'
-]);
-scene.background = texture;
+// const cubeTextureLoader = new THREE.CubeTextureLoader();
+// const texture = cubeTextureLoader.load([
+//     'assets/img/HDRI_Hero3sky.jpg',
+//     'assets/img/HDRI_Hero3sky.jpg',
+//     'assets/img/HDRI_Hero3sky.jpg',
+//     'assets/img/HDRI_Hero3sky.jpg',
+//     'assets/img/HDRI_Hero3sky.jpg',
+//     'assets/img/HDRI_Hero3sky.jpg'
+// ]);
+// scene.background = texture;
 
-// // Add HDR background
-// let pmremGenerator = new THREE.PMREMGenerator(renderer);
-// pmremGenerator.compileEquirectangularShader();
-// let rgbeLoader = new RGBELoader()
-// .setDataType(THREE.UnsignedByteType)
-// .setPath('assets/textures/hdr/')
-// .load('background_1k.hdr', function(texture){
-//     let envMap = pmremGenerator.fromEquirectangular(texture).texture;
-//     scene.background = envMap;
-//     scene.environment = envMap;
-//     texture.dispose();
-//     pmremGenerator.dispose();
-// });
+// Add HDR background
+let pmremGenerator = new THREE.PMREMGenerator(renderer);
+pmremGenerator.compileEquirectangularShader();
+let rgbeLoader = new RGBELoader()
+.setDataType(THREE.UnsignedByteType)
+.setPath('assets/textures/hdr/')
+.load('background_1k.hdr', function(texture){
+    let envMap = pmremGenerator.fromEquirectangular(texture).texture;
+    scene.background = envMap;
+    scene.environment = envMap;
+    texture.dispose();
+    pmremGenerator.dispose();
+});
 
 // Add lights to scene
 for(let i in LIGHTS){
@@ -117,10 +117,10 @@ for(let i in TARGETS){
     scene.add(TARGETS[i]);
 }
 
-// Add lights helpers to scene
-for(let i in HELPERS){
-    scene.add(HELPERS[i]);
-}
+// // Add lights helpers to scene
+// for(let i in HELPERS){
+//     scene.add(HELPERS[i]);
+// }
 
 // Load ground mirror
 let groundGeometry = new THREE.PlaneBufferGeometry(9, 9);

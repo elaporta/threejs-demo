@@ -1,13 +1,13 @@
 // Dependencies
 import * as THREE from './three.js/build/three.module.js';
 
-// Add ambient light to scene
-const ambientLight = new THREE.AmbientLight(0xffffff, .4);
+// // Add ambient light to scene
+// const ambientLight = new THREE.AmbientLight(0xffffff, .4);
 
-// Add hemisphere light A to scene
-const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x404040, .5);
-hemisphereLight.position.set(-0.1, 3.6, 3.8);
-const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 3);
+// // Add hemisphere light A to scene
+// const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x404040, .5);
+// hemisphereLight.position.set(-0.1, 3.6, 3.8);
+// const hemisphereLightHelper = new THREE.HemisphereLightHelper(hemisphereLight, 3);
 
 // Add point light A to scene
 const pointLightA = new THREE.PointLight(0xffffff, .8, 4.5, 2);
@@ -50,8 +50,8 @@ spotLightA.shadow.mapSize = new THREE.Vector2(2048, 2048);
 const spotLightAHelper = new THREE.SpotLightHelper(spotLightA, 5);
 
 export const LIGHTS = {
-	ambientLight: ambientLight,
-	hemisphereLight: hemisphereLight,
+	// ambientLight: ambientLight,
+	// hemisphereLight: hemisphereLight,
 	pointLightA: pointLightA,
 	pointLightB: pointLightB,
 	pointLightC: pointLightC,
@@ -66,10 +66,10 @@ export const TARGETS = {
 
 export const HELPERS = {
 	// hemisphereLight: hemisphereLightHelper,
-	// pointLightA: pointLightAHelper,
-	// pointLightB: pointLightBHelper,
-	// pointLightC: pointLightCHelper,
-	// pointLightD: pointLightDHelper,
-	// pointLightE: pointLightEHelper,
-	// spotLightA: spotLightAHelper
+	pointLightA: pointLightAHelper,
+	pointLightB: pointLightBHelper,
+	pointLightC: pointLightCHelper,
+	pointLightD: pointLightDHelper,
+	pointLightE: pointLightEHelper,
+	spotLightA: spotLightAHelper
 }

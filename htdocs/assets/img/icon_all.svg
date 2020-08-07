@@ -1,6 +1,5 @@
 <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
  <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
-
  <g>
   <title>background</title>
   <rect fill="none" id="canvas_background" height="152" width="152" y="-1" x="-1"/>
@@ -10,7 +9,11 @@
  </g>
  <g>
   <title>Layer 1</title>
-  <text font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Junction, sans-serif" font-size="60" id="svg_1" y="307.198437" x="384.804688" stroke-width="0" stroke="#000" fill="#000000">All</text>
-  <text stroke="#000" font-weight="normal" xml:space="preserve" text-anchor="start" font-family="Junction, sans-serif" font-size="70" id="svg_2" y="101.003113" x="30.226563" stroke-width="0" fill="#ffffff">All</text>
+  <path id="svg_3" d="m1,37.5l74,-36.5l74,36.5l-74,36.5l-74,-36.5z" stroke-width="1.5" stroke="#fff" fill="none"/>
+  <path id="svg_4" d="m1.00011,112.25014l74,-36.5l74,36.5l-74,36.5l-74,-36.5z" stroke-width="1.5" stroke="#fff" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_6" y2="112.0085" x2="0.63305" y1="37.26659" x1="0.88302" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_7" y2="111.75852" x2="148.867" y1="37.26659" x1="149.11698" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_8" y2="148.25457" x2="74.87501" y1="73.51266" x1="74.62504" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_9" y2="73.51266" x2="74.62504" y1="0.52056" x1="74.87501" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none"/>
  </g>
 </svg>
