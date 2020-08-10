@@ -50,8 +50,8 @@ CONTAINER.appendChild(renderer.domElement);
 
 // Add a camera
 let camera = new THREE.PerspectiveCamera(35, WIDTH / HEIGHT, 0.1, 1000);
-camera.position.set(2.913008425923964, 3.532586021620339e-16, 4.97970708939187);
-camera.rotation.set(-7.093963476578185e-17, 0.529299082785851, 3.5819440588148225e-17);
+camera.position.set(2.265756650575733, 0.2446215651360226, 5.4421050238158895);
+camera.rotation.set(-0.044919569192272295, 0.39415330126621373, 0.017260204742749117);
 
 // Camera resizing
 function resize(){
@@ -66,32 +66,19 @@ let controls = new OrbitControls(camera, renderer.domElement);
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
-// controls.enableZoom = false;    // true
+// controls.enableZoom = false;
 
-// // Limit Y rotation
-// controls.maxPolarAngle = 1.7382304385754106;
-// controls.minPolarAngle = 1.253552748871017;
+// Limit Y rotation
+controls.maxPolarAngle = 1.7382304385754106;
+controls.minPolarAngle = 1.253552748871017;
 
-// // Limit X rotation
-// controls.maxAzimuthAngle = 0.547924223149144;
-// controls.minAzimuthAngle = -0.7308629085677654;
+// Limit X rotation
+controls.maxAzimuthAngle = 0.547924223149144;
+controls.minAzimuthAngle = -0.7308629085677654;
 
-// // Limit distance
-// controls.minDistance = 0;
-// controls.maxDistance = 5.9;
-
-// Background
-// scene.background = new THREE.Color(BACKGROUND_COLOR);
-// const cubeTextureLoader = new THREE.CubeTextureLoader();
-// const texture = cubeTextureLoader.load([
-//     'assets/img/HDRI_Hero3sky.jpg',
-//     'assets/img/HDRI_Hero3sky.jpg',
-//     'assets/img/HDRI_Hero3sky.jpg',
-//     'assets/img/HDRI_Hero3sky.jpg',
-//     'assets/img/HDRI_Hero3sky.jpg',
-//     'assets/img/HDRI_Hero3sky.jpg'
-// ]);
-// scene.background = texture;
+// Limit distance
+controls.minDistance = 0;
+controls.maxDistance = 5.9;
 
 // Add HDR background
 let pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -112,10 +99,10 @@ for(let i in LIGHTS){
     scene.add(LIGHTS[i]);
 }
 
-// Add lights targets to scene
-for(let i in TARGETS){
-    scene.add(TARGETS[i]);
-}
+// // Add lights targets to scene
+// for(let i in TARGETS){
+//     scene.add(TARGETS[i]);
+// }
 
 // // Add lights helpers to scene
 // for(let i in HELPERS){
@@ -168,7 +155,6 @@ let loadergManager = new THREE.LoadingManager(function(){
                 // Set shadows
                 o.castShadow = true;
                 o.receiveShadow = true;
-                // o.toneMapped = false;
 
                 if(o.name.includes('T01')){
                     o.castShadow = false;
@@ -193,7 +179,6 @@ let loadergManager = new THREE.LoadingManager(function(){
                 }
 
                 if(o.name.includes('T08')){
-                    // o.material = MATERIALS.T08;
                     o.castShadow = false;
                     o.receiveShadow = false;
                 }
@@ -216,10 +201,6 @@ let loadergManager = new THREE.LoadingManager(function(){
                     o.material = MATERIALS.T11;
                 }
 
-                if(o.name.includes('T13')){
-                    o.material = MATERIALS.T13;
-                }
-
                 if(o.name.includes('T14')){
                     o.castShadow = false;
                     o.receiveShadow = false;
@@ -233,14 +214,6 @@ let loadergManager = new THREE.LoadingManager(function(){
                 if(o.name.includes('T16')){
                     o.castShadow = false;
                     o.receiveShadow = false;
-                }
-
-                if(o.name.includes('T17')){
-                    o.material = MATERIALS.T17;
-                }
-
-                if(o.name.includes('T18')){
-                    o.material = MATERIALS.T18;
                 }
             }
             else{
@@ -530,8 +503,8 @@ document.getElementById('screenshotbtn').addEventListener('click', screenShot);
 
 // Debug info
 function debugInfo(){
-    // console.log('Position: ', LIGHTS.spotLightA);
-    alert(JSON.stringify(LIGHTS.pointLightA.position));
+    console.log('Debug: ', camera);
+    // alert(JSON.stringify(LIGHTS.pointLightC.position));
 }
 
 // Key controls movement
@@ -557,22 +530,22 @@ document.onkeydown = function(e){
 
         // the model position for up/down
         case 65: // a
-            LIGHTS.pointLightA.position.x -= 0.1;
+            LIGHTS.pointLightC.position.x -= 0.1;
         break;
         case 68: // d
-            LIGHTS.pointLightA.position.x += 0.1;
+            LIGHTS.pointLightC.position.x += 0.1;
         break;
         case 69: // e
-            LIGHTS.pointLightA.position.z -= 0.1;
+            LIGHTS.pointLightC.position.z -= 0.1;
         break;
         case 81: // q
-            LIGHTS.pointLightA.position.z += 0.1;
+            LIGHTS.pointLightC.position.z += 0.1;
         break;
         case 83: // s
-            LIGHTS.pointLightA.position.y -= 0.1;
+            LIGHTS.pointLightC.position.y -= 0.1;
         break;
         case 87: // w
-            LIGHTS.pointLightA.position.y += 0.1;
+            LIGHTS.pointLightC.position.y += 0.1;
         break;
     }
 };

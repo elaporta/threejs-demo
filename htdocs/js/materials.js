@@ -57,16 +57,6 @@ function init(){
 	    roughnessMap: roughnessMap
 	});
 
-	// T08
-	// map = textureLoader.load('assets/textures/T08_CORTINAS_B/1K/T08.jpg');
-	// map.wrapS = THREE.RepeatWrapping;
-	// map.wrapT = THREE.RepeatWrapping;
-	// LOADEDMATERIALS.T08 = new THREE.MeshStandardMaterial({
-	//     map: map,
-	//     transparent: true,
-	//     opacity: .6
-	// });
-
 	// T09
 	map = textureLoader.load('assets/textures/T09_CORTINAS_G/1K/T09.jpg');
 	map.wrapS = THREE.RepeatWrapping;
@@ -100,46 +90,6 @@ function init(){
 	roughnessMap.wrapS = THREE.RepeatWrapping;
 	roughnessMap.wrapT = THREE.RepeatWrapping;
 	LOADEDMATERIALS.T11 = new THREE.MeshStandardMaterial({
-	    map: map,
-	    normalMap: normalMap,
-	    roughnessMap: roughnessMap
-	});
-
-	// T13
-	map = textureLoader.load('assets/textures/T13_JARRONES/1K/T13.jpg');
-	map.wrapS = THREE.RepeatWrapping;
-	map.wrapT = THREE.RepeatWrapping;
-	normalMap = textureLoader.load('assets/textures/T13_JARRONES/1K/T13_NRM.jpg');
-	roughnessMap = textureLoader.load('assets/textures/T13_JARRONES/1K/T13_ROUGH.jpg');
-	LOADEDMATERIALS.T13 = new THREE.MeshStandardMaterial({
-	    map: map,
-	    normalMap: normalMap,
-	    roughnessMap: roughnessMap
-	});
-
-	// T17
-	map = textureLoader.load('assets/textures/T17_PLANTA_1/1K/T17.jpg');
-	map.wrapS = THREE.RepeatWrapping;
-	map.wrapT = THREE.RepeatWrapping;
-	normalMap = textureLoader.load('assets/textures/T17_PLANTA_1/1K/T17_NRM.jpg');
-	normalMap.wrapS = THREE.RepeatWrapping;
-	normalMap.wrapT = THREE.RepeatWrapping;
-	roughnessMap = textureLoader.load('assets/textures/T17_PLANTA_1/1K/T17_ROUGH.jpg');
-	roughnessMap.wrapS = THREE.RepeatWrapping;
-	roughnessMap.wrapT = THREE.RepeatWrapping;
-	LOADEDMATERIALS.T17 = new THREE.MeshStandardMaterial({
-	    map: map,
-	    normalMap: normalMap,
-	    roughnessMap: roughnessMap
-	});
-
-	// T18
-	map = textureLoader.load('assets/textures/T18_PLANTA_2_(SUCULENTA)/1K/T18.jpg');
-	map.wrapS = THREE.RepeatWrapping;
-	map.wrapT = THREE.RepeatWrapping;
-	normalMap = textureLoader.load('assets/textures/T18_PLANTA_2_(SUCULENTA)/1K/T18_NRM.jpg');
-	roughnessMap = textureLoader.load('assets/textures/T18_PLANTA_2_(SUCULENTA)/1K/T18_ROUGH.jpg');
-	LOADEDMATERIALS.T18 = new THREE.MeshStandardMaterial({
 	    map: map,
 	    normalMap: normalMap,
 	    roughnessMap: roughnessMap

@@ -159,11 +159,6 @@ canvas {
     background-image: url('../img/icon_e.svg');
 }
 
-.option:hover {
-    width: 58px;
-    padding-right: 5px;
-}
-
 .option.--is-active {
     border-right: 3px solid red;
     width: 58px;
