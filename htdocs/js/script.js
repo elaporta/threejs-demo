@@ -44,8 +44,6 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffe
 renderer.setSize(WIDTH, HEIGHT);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.shadowMap.enabled = true;
-// renderer.toneMapping = THREE.ACESFilmicToneMapping;
-// renderer.toneMappingExposure = 1;
 CONTAINER.appendChild(renderer.domElement);
 
 // Add a camera
@@ -66,7 +64,8 @@ let controls = new OrbitControls(camera, renderer.domElement);
 
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
-// controls.enableZoom = false;
+controls.enableZoom = false;
+controls.enableKeys = false;
 
 // Limit Y rotation
 controls.maxPolarAngle = 1.7382304385754106;
@@ -501,51 +500,51 @@ function screenShot(){
 }
 document.getElementById('screenshotbtn').addEventListener('click', screenShot);
 
-// Debug info
-function debugInfo(){
-    console.log('Debug: ', camera);
-    // alert(JSON.stringify(LIGHTS.pointLightC.position));
-}
+// // Debug info
+// function debugInfo(){
+//     console.log('Debug: ', camera);
+//     // alert(JSON.stringify(LIGHTS.pointLightC.position));
+// }
 
-// Key controls movement
-document.onkeydown = function(e){
-    switch(e.keyCode){
-        case 37: // left
-            camera.rotation.x += 0.1;
-        break;
-        case 38: // up
-            camera.rotation.z -= 0.1;
-        break;
-        case 39: // right
-            camera.rotation.x -= 0.1;
-        break;
-        case 40: // down
-            camera.rotation.z += 0.1;
-        break;
+// // Key controls movement
+// document.onkeydown = function(e){
+//     switch(e.keyCode){
+//         case 37: // left
+//             camera.rotation.x += 0.1;
+//         break;
+//         case 38: // up
+//             camera.rotation.z -= 0.1;
+//         break;
+//         case 39: // right
+//             camera.rotation.x -= 0.1;
+//         break;
+//         case 40: // down
+//             camera.rotation.z += 0.1;
+//         break;
 
-        // debug info
-        case 73: // i
-            debugInfo();
-        break;
+//         // debug info
+//         case 73: // i
+//             debugInfo();
+//         break;
 
-        // the model position for up/down
-        case 65: // a
-            LIGHTS.pointLightC.position.x -= 0.1;
-        break;
-        case 68: // d
-            LIGHTS.pointLightC.position.x += 0.1;
-        break;
-        case 69: // e
-            LIGHTS.pointLightC.position.z -= 0.1;
-        break;
-        case 81: // q
-            LIGHTS.pointLightC.position.z += 0.1;
-        break;
-        case 83: // s
-            LIGHTS.pointLightC.position.y -= 0.1;
-        break;
-        case 87: // w
-            LIGHTS.pointLightC.position.y += 0.1;
-        break;
-    }
-};
+//         // the model position for up/down
+//         case 65: // a
+//             LIGHTS.pointLightC.position.x -= 0.1;
+//         break;
+//         case 68: // d
+//             LIGHTS.pointLightC.position.x += 0.1;
+//         break;
+//         case 69: // e
+//             LIGHTS.pointLightC.position.z -= 0.1;
+//         break;
+//         case 81: // q
+//             LIGHTS.pointLightC.position.z += 0.1;
+//         break;
+//         case 83: // s
+//             LIGHTS.pointLightC.position.y -= 0.1;
+//         break;
+//         case 87: // w
+//             LIGHTS.pointLightC.position.y += 0.1;
+//         break;
+//     }
+// };
